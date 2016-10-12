@@ -15,7 +15,6 @@ from itertools import izip
 import seeq
 
 from gzopen import gzopen
-from vtrack import vheader
 
 LOGFNAME = 'tripelog.txt'
 
@@ -230,7 +229,6 @@ def collect_integrations(fname_starcode_out, fname_mapped, *args):
             except (IndexError, ValueError) as ex:
                raise FormatException("Input file with wrong format")
    with open(fname_insertions_table, 'w') as outf:
-      outf.write(vheader(*sys.argv))
       unmapped = 0
       mapped = 0
       for brcd in sorted(integrations, key=lambda x: (integrations.get(x),x)):

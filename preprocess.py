@@ -1,44 +1,71 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import seeq
-import string
 import sys
+import seeq
 
 from itertools import izip
-
 from gzopen import gzopen
 
-comp = string.maketrans('gatcGATC', 'ctagCTAG')
+class AberrantReadException(Exception):
+   pass
 
-# Forward stuff
-anchorward = seeq.compile('CGCTAATTAATGGAATCATG', 3)
-beforward = seeq.compile('CGCTACGAGGCCGGCCGC', 3)
+class Extractor:
+   seq_after_tag = None
+   seq_before_variant = None
 
-# Reverse stuff
-anchorev = seeq.compile('TGCAACGAATTCATTAG', 3)
-beforev = seeq.compile('CACCTTGAAGTCGCCGATCA', 3)
+   def extract_tag_and_variant(self, txt):
+      '''Both reads have the same structure, with a tag (either a
+      barcode or a UMI) immediately after the Illumina sequencing
+      primer, and the variant towards the end of the read.'''
 
-def revcomp(seq):
-   '''Reverse complement a DNA string.'''
-   return seq[::-1].translate(comp)
+      # First extract the prefix and the suffix
+      prefix = self.seq_after_tag.matchPrefix(txt, False)
+      if not prefix:
+         raise AberrantReadException
+
+      # The first character of the suffix is the variant.
+      suffix = self.seq_seq_before_variant.matchSuffix(txt, False)
+      if not suffix:
+         raise AberrantReadException
+
+      # The prefix is the tag, the first character
+      # of the suffix is the variant.
+      return (prefix, suffix[0])
+
+
+class Read1Extractor(Extractor):
+   def __init__(self):
+      self.seq_after_tag = seeq.compile('CGCTAATTAATGGAATCATG', 3)
+      self.seq_before_variant = seeq.compile('CGCTACGAGGCCGGCCGC', 3)
+      super(Read1Extractor, self).__init__()
+
+
+class Read2Extractor(Extractor):
+   def __init__(self):
+      self.seq_after_tag  = seeq.compile('TGCAACGAATTCATTAG', 3)
+      self.seq_before_variant = seeq.compile('CACCTTGAAGTCGCCGATCA', 3)
+      super(Read2Extractor, self).__init__()
 
 
 def main(f, g):
    '''Top-level function to pre-process paired fastq files.'''
 
+   R1 = Read1Extractor()
+   R2 = Read2Extractor()
+
    linenumber = 0
+   naberrant = 0
    for (read1,read2) in izip(f,g):
       linenumber = linenumber + 1
       if linenumber % 4 == 2:
          # Reading sequence line.
          try:
-            brcd = anchorward.matchPrefix(read1, False)
-            umi = anchorev.matchPrefix(read2, False)
-            SNP1 = beforward.matchSuffix(read1, False)[0]
-            SNP2 = beforev.matchSuffix(read2, False)[0]
-            print brcd, umi, SNP1, SNP2
-         except TypeError:
+            BCD,SNP1 = R1.extract_tag_and_variant(read1)
+            UMI,SNP2 = R2.extract_tag_and_variant(read2)
+            print BCD UMI, SNP1, SNP2
+         except AberrantReadException:
+            naberrant += 1
             continue
 
 if __name__ == '__main__':
