@@ -77,6 +77,18 @@ class TestExtractor(unittest.TestCase):
          ex.extract_tag_and_variant(seq)
 
       # Test case 5.
+      seq = 'GAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
+
+      with self.assertRaises(preprocess.AberrantReadException):
+         ex.extract_tag_and_variant(seq)
+
+      # Test case 6.
+      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGC'
+
+      with self.assertRaises(preprocess.AberrantReadException):
+         ex.extract_tag_and_variant(seq)
+
+      # Test case 7.
       # Extra mutation compared to test case 3.
       seq = 'aaaaaaaaGAAaCATtgACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
       #                      ^
@@ -84,7 +96,7 @@ class TestExtractor(unittest.TestCase):
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_tag_and_variant(seq)
 
-      # Test case 6.
+      # Test case 8.
       # Extra mutation compared to test case 3.
       seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGaTACGAcGCgcGCCGCgc'
       #                                     ^
@@ -125,6 +137,18 @@ class TestExtractor(unittest.TestCase):
          ex.extract_tag_and_variant(seq)
 
       # Test case 5.
+      seq = 'TGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
+
+      with self.assertRaises(preprocess.AberrantReadException):
+         ex.extract_tag_and_variant(seq)
+      
+      # Test case 6.
+      seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCA'
+
+      with self.assertRaises(preprocess.AberrantReadException):
+         ex.extract_tag_and_variant(seq)
+
+      # Test case 7.
       # Extra mutation compared to test case 3.
       seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAAcaCGCCGATCAgc'
       #                    ^
@@ -132,7 +156,7 @@ class TestExtractor(unittest.TestCase):
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_tag_and_variant(seq)
 
-      # Test case 6.
+      # Test case 8.
       # Extra mutation compared to test case 3.
       seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAtcaCGCCGATCAgc'
       #                                         ^

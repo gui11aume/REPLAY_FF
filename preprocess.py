@@ -98,8 +98,8 @@ def main(f, g, info):
       if linenumber % 4 == 2:
          info.ntotal += 1
          try:
-            BCD,SNP1 = Ex1.extract_tag_and_variant(read1)
-            UMI,SNP2 = Ex2.extract_tag_and_variant(read2)
+            BCD,SNP1 = Ex1.extract_tag_and_variant(read1.rstrip())
+            UMI,SNP2 = Ex2.extract_tag_and_variant(read2.rstrip())
             # Concatenate the barcode and the UMI into a single
             # tag. To mark the distrinction, insertion 8 a's in
             # between. Starcode will keep the lower case.
