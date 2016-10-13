@@ -25,7 +25,7 @@ class Extractor:
          raise AberrantReadException
 
       # The first character of the suffix is the variant.
-      suffix = self.seq_seq_before_variant.matchSuffix(txt, False)
+      suffix = self.seq_before_variant.matchSuffix(txt, False)
       if not suffix:
          raise AberrantReadException
 
@@ -38,21 +38,19 @@ class Read1Extractor(Extractor):
    def __init__(self):
       self.seq_after_tag = seeq.compile('CGCTAATTAATGGAATCATG', 3)
       self.seq_before_variant = seeq.compile('CGCTACGAGGCCGGCCGC', 3)
-      super(Read1Extractor, self).__init__()
 
 
 class Read2Extractor(Extractor):
    def __init__(self):
       self.seq_after_tag  = seeq.compile('TGCAACGAATTCATTAG', 3)
       self.seq_before_variant = seeq.compile('CACCTTGAAGTCGCCGATCA', 3)
-      super(Read2Extractor, self).__init__()
 
 
 def main(f, g):
    '''Top-level function to pre-process paired fastq files.'''
 
-   R1 = Read1Extractor()
-   R2 = Read2Extractor()
+   Ex1 = Read1Extractor()
+   Ex2 = Read2Extractor()
 
    linenumber = 0
    naberrant = 0
@@ -61,9 +59,9 @@ def main(f, g):
       if linenumber % 4 == 2:
          # Reading sequence line.
          try:
-            BCD,SNP1 = R1.extract_tag_and_variant(read1)
-            UMI,SNP2 = R2.extract_tag_and_variant(read2)
-            print BCD UMI, SNP1, SNP2
+            BCD,SNP1 = Ex1.extract_tag_and_variant(read1)
+            UMI,SNP2 = Ex2.extract_tag_and_variant(read2)
+            print BCD, UMI, SNP1, SNP2
          except AberrantReadException:
             naberrant += 1
             continue

@@ -1,0 +1,5 @@
+*.fasta
+*.map
+*.stc
+*.pyc
+*_insertions.txt

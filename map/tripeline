@@ -48,18 +48,20 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
    }
 
    outfiles = {
-      'AAC': open('AAC_CA_.fasta', 'w'),
-      'ACA': open('ACA_CA_.fasta', 'w'),
-      'AGG': open('AGG_CA_.fasta', 'w'),
-      'TTC': open('TTC_CA_.fasta', 'w'),
-      'ATT': open('ATT_GA_.fasta', 'w'),
-      'CCG': open('CCG_GA_.fasta', 'w'),
-      'TAA': open('TAA_GA_.fasta', 'w'),
-      'TGC': open('TGC_GA_.fasta', 'w'),
-      'ACT': open('ACT_GT_.fasta', 'w'),
-      'ATC': open('ATC_GT_.fasta', 'w'),
-      'TGA': open('TGA_GT_.fasta', 'w'),
-      'TGT': open('TGT_GT_.fasta', 'w'),
+      'AAC': open('CA_AAC.fasta', 'w'),
+      'ACA': open('CA_ACA.fasta', 'w'),
+      'AGG': open('CA_AGG.fasta', 'w'),
+      'TTC': open('CA_TTC.fasta', 'w'),
+
+      'ACT': open('GT_ACT.fasta', 'w'),
+      'ATC': open('GT_ATC.fasta', 'w'),
+      'TGA': open('GT_TGA.fasta', 'w'),
+      'TGT': open('GT_TGT.fasta', 'w'),
+
+      'ATT': open('GA_ATT.fasta', 'w'),
+      'CCG': open('GA_CCG.fasta', 'w'),
+      'TAA': open('GA_TAA.fasta', 'w'),
+      'TGC': open('GA_TGC.fasta', 'w'),
    }
 
    # End of the pT2 transposon sequence.
