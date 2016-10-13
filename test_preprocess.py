@@ -1,8 +1,41 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+
 import unittest
 
+from StringIO import StringIO
+from textwrap import dedent
+
 import preprocess
+
+
+class TestLaneInfo(unittest.TestCase):
+
+   def test_constructor(self):
+      info = preprocess.LaneInfo('fname1', 'fname2')
+      self.assertEqual(info.fname1, 'fname1')
+      self.assertEqual(info.fname2, 'fname2')
+      self.assertEqual(info.ntotal, 0)
+      self.assertEqual(info.naberrant, 0)
+
+   def test_write_to_file(self):
+      info = preprocess.LaneInfo('fname1', 'fname2')
+      info.ntotal = 1000000
+      info.naberrant = 100000
+
+      buffer = StringIO()
+      info.write_to_file(buffer)
+
+      txt = '''fname1
+         fname2
+         Reads lost:\t100000 (10.00 %)
+         ---'''
+
+      check = '\n'.join(buffer.getvalue().splitlines()[1:])
+      self.assertEqual(check, dedent(' '*9 + txt))
+
+      buffer.close()
+
 
 class TestExtractor(unittest.TestCase):
 
@@ -16,21 +49,21 @@ class TestExtractor(unittest.TestCase):
       ex = preprocess.Read1Extractor()
 
       # Test case 1.
-      seq = 'aaaaaaaaCGCTAATTAATGGAATCATGCGCTACGAGGCCGGCCGCgc'
+      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
 
       BCD,SNP1 = ex.extract_tag_and_variant(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
       self.assertEqual(SNP1, 'g')
 
       # Test case 2.
-      seq = 'aaaaaaaaCGCTAATTAATGGAATCATGttCGCTACGAGGCCGGCCGCgc'
+      seq = 'aaaaaaaaGAATCATGAACACCCGCATttCGCTACGAGGCCGGCCGCgc'
 
       BCD,SNP1 = ex.extract_tag_and_variant(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
       self.assertEqual(SNP1, 'g')
 
       # Test case 3.
-      seq = 'aaaaaaaaCGCTtATTAAgGGAAaCATGttCGCTACGAcGCgcGCCGCgc'
+      seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
 
       BCD,SNP1 = ex.extract_tag_and_variant(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
@@ -45,7 +78,7 @@ class TestExtractor(unittest.TestCase):
 
       # Test case 5.
       # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaCGCTtATTtAgGGAAaCATGttCGCTACGAcGCgcGCCGCgc'
+      seq = 'aaaaaaaaGAAaCATtgACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
       #                      ^
 
       with self.assertRaises(preprocess.AberrantReadException):
@@ -53,7 +86,7 @@ class TestExtractor(unittest.TestCase):
 
       # Test case 6.
       # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaCGCTtATTAAgGGAAaCATGttCcCTACGAcGCgcGCCGCgc'
+      seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGaTACGAcGCgcGCCGCgc'
       #                                     ^
 
       with self.assertRaises(preprocess.AberrantReadException):
@@ -86,7 +119,7 @@ class TestExtractor(unittest.TestCase):
 
       # Test case 4.
       # Structure of a read 1.
-      seq = 'aaaaaaaaCGCTAATTAATGGAATCATGCGCTACGAGGCCGGCCGCgc'
+      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_tag_and_variant(seq)

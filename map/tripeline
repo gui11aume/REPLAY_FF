@@ -36,9 +36,9 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
    # Those are the scarcodes that allow to identify which
    # experiment is sequenced (CA, GA or GT mismatch).
    matchers = {
-      'CA': seeq.compile('GCTAGCAGTCAGGAATCATG', 2),
-      'GA': seeq.compile('GCTAGCTCGTTGGAATCATG', 2),
-      'GT': seeq.compile('GCTAGCTCCGCAGAATCATG', 2),
+      'CA': seeq.compile('GCTAGCAGTCAGGAATCATG', 3),
+      'GA': seeq.compile('GCTAGCTCGTTGGAATCATG', 3),
+      'GT': seeq.compile('GCTAGCTCCGCAGAATCATG', 3),
    }
 
    indexes = {
