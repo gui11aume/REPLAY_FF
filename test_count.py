@@ -56,5 +56,32 @@ class TestScarcodeReader(unittest.TestCase):
       with self.assertRaises(count.SampleIDException):
          count.ScarcodeReader.read(tags)
 
+
+class TestExperimentInfo(unittest.TestCase):
+
+   def test_init(self):
+
+      # Make sure that an exception is raised if some non accepted
+      # code is used to instantiate the ExperimentInfo.
+      with self.assertRaises(KeyError):
+         count.ExperimentInfo('AA')
+
+      info = count.ExperimentInfo('GA')
+      self.assertEqual(info.FF, ('C', 'A'))
+      self.assertEqual(info.AT, ('T', 'A'))
+      self.assertEqual(info.GC, ('C', 'G'))
+
+      # Not yet implemented...
+      info = count.ExperimentInfo('GT')
+      self.assertEqual(info.FF, ('C', 'A'))
+      self.assertEqual(info.AT, ('T', 'A'))
+      self.assertEqual(info.GC, ('C', 'G'))
+
+class TestTagNormalizer(unittest.TestCase):
+
+   def test_init(self):
+      self.assertEqual(1,2)
+
+
 if __name__ == '__main__':
    unittest.main()
