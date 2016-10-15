@@ -41,6 +41,9 @@ class EventCounter:
       assign = {
          #          FF          AT          GC
          'GA': (('A', 'C'), ('A', 'T'), ('G', 'C')),
+         'GT': (('T', 'C'), ('T', 'A'), ('G', 'C')),
+         'CA': (('A', 'G'), ('A', 'T'), ('C', 'G')),
+         'CT': (('T', 'G'), ('T', 'A'), ('C', 'G')),
       }
 
       clip = {
