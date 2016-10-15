@@ -118,7 +118,7 @@ class EventCounter:
       '''Processing function to convert the reads to repair events.'''
 
       # Create a filter for UMIs used multiple times.
-      reverse_lookup = defaultdict(set)
+      reverse_lookup = defaultdict(lambda: defaultdict(int))
 
       for line in f:
          self.info.nreads += 1
@@ -127,7 +127,7 @@ class EventCounter:
          try:
             bcd, umi = self.normalize_tag(tag)
             bcd = self.clip_barcode(bcd)
-            reverse_lookup[umi].add(bcd)
+            reverse_lookup[umi][bcd] += 1
          except AberrantTagException:
             self.info.aberrant_tags += 1
             continue
@@ -141,7 +141,8 @@ class EventCounter:
                self.info.thrown_reads += 1
                continue
             # Discard UMIs used multiple times.
-            if len(reverse_lookup[umi]) > 1:
+            S = [1 for (a,b) in reverse_lookup[umi].items() if b > 1]
+            if len(S) > 1:
                self.info.thrown_reads += sum(dict_of_variants.values())
                continue
             variant = self.normalize_variant(dict_of_variants)
