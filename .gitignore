@@ -1,6 +1,8 @@
 *.fasta
 *.map
-*.stc
 *.pyc
 *_insertions.txt
 *_logs.txt
+*.pps
+*.co
+*.stc
