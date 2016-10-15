@@ -34,8 +34,6 @@ class TestLaneInfo(unittest.TestCase):
       check = '\n'.join(buffer.getvalue().splitlines()[1:])
       self.assertEqual(check, dedent(' '*9 + txt))
 
-      buffer.close()
-
 
 class TestExtractor(unittest.TestCase):
 
