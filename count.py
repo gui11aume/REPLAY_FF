@@ -8,23 +8,12 @@ import sys
 from collections import defaultdict
 
 
-class SampleIDException(Exception):
-   pass
-
 class AberrantTagException(Exception):
    pass
 
 
 class EventCounter:
    '''Basic information about the experiment.'''
-
-   # MMcodes and their scarcodes.
-   MM = {
-      'CGCTAATTAATG': 'CT',
-      'GCTAGCAGTCAG': 'CA',
-      'GCTAGCTCGTTG': 'GA',
-      'GCTAGCTCCGCA': 'GT',
-   }
 
    def __init__(self, normalizer, info):
 
@@ -53,7 +42,7 @@ class EventCounter:
          'GT': seeq.compile('GCTAGCTCCGCA', 2),
       }
 
-      self.info.MMcode = self.get_MMcode(normalizer)
+      self.info.get_MMcode(normalizer)
 
       self.MM = assign[self.info.MMcode]
       self.clip = clip[self.info.MMcode]
@@ -65,60 +54,6 @@ class EventCounter:
          raise AberrantTagException
       return bcd
 
-
-   @staticmethod
-   def get_MMcode(tags):
-      '''The barcodes have a scar (the scarcode) that identifies the
-      kind of mismatch that is generated during the DNA repair. This
-      information can be extracted to specify the variants that are
-      expected in a given set of reads.'''
-
-      # Scarcodes and the corresponding mismatches.
-      refscars = {
-         'CGCTAATTAATG': 0,
-         'GCTAGCAGTCAG': 0,
-         'GCTAGCTCGTTG': 0,
-         'GCTAGCTCCGCA': 0,
-      }
-
-      for tag in tags:
-         try:
-            bcd,umi = tag.split('ATGCTACG')
-            scarcode = bcd[-12:]
-         except ValueError:
-            # The tag may have been tampered with
-            # during the sequence clustering.
-            continue
-         if scarcode in refscars:
-            refscars[scarcode] += 1
-         # Count maximum 1000 barcodes.
-         if sum(refscars.values()) > 1000:
-            break
-
-      winner = max(refscars, key=refscars.get)
-      # The winner must represent more than 90% of the barcodes.
-      if not refscars[winner] > 0.9 * float(sum(refscars.values())):
-         raise SampleIDException
-
-      return EventCounter.MM[winner]
-
-
-   def normalize_variant(self, dict_of_variants):
-      '''In several cases the barcode/UMI pair is associated with
-      multiple variants. Read errors and template switching during the
-      PCR can cause this. In any event, a barcode/UMI pair corresponds
-      to a unique molecule and therefore a single repair event that we
-      can try to infer.'''
-
-      # If variants are not unanimous for the barcode/UMI pair,
-      # create an exception entry for the records.
-      if len(dict_of_variants) > 1:
-         entry = [dict_of_variants[a] for a in self.MM ]
-         self.info.vart_conflicts.append(entry)
-
-      # The most frequent variant is assigned to the pair.
-      variant = max(dict_of_variants, key=dict_of_variants.get)
-      return variant
 
 
    def count(self, f, outf=sys.stdout):
@@ -152,7 +87,7 @@ class EventCounter:
             if len(S) > 1:
                self.info.thrown_reads += sum(dict_of_variants.values())
                continue
-            variant = self.normalize_variant(dict_of_variants)
+            variant = self.info.normalize_variant(dict_of_variants)
             counter[variant] += 1
          # If all UMIs were single read, the counter
          # is empty and there is nothing to show.
@@ -199,6 +134,15 @@ class TagNormalizer:
 
 class CountingInfo:
 
+   # MMcodes and their scarcodes.
+   MM = {
+      'CGCTAATTAATG': 'CT',
+      'GCTAGCAGTCAG': 'CA',
+      'GCTAGCTCGTTG': 'GA',
+      'GCTAGCTCCGCA': 'GT',
+   }
+
+
    def __init__(self, fname1, fname2):
       self.fname1 = fname1
       self.fname2 = fname2
@@ -208,6 +152,66 @@ class CountingInfo:
       self.vart_conflicts = []
       self.aberrant_tags = 0
       self.thrown_reads = 0
+      self.prop_wrongMM = 0.0
+
+
+   def normalize_variant(self, dict_of_variants):
+      '''In several cases the barcode/UMI pair is associated with
+      multiple variants. Read errors and template switching during the
+      PCR can cause this. In any event, a barcode/UMI pair corresponds
+      to a unique molecule and therefore a single repair event that we
+      can try to infer.'''
+
+      # The most frequent variant is assigned to the tag.
+      variant = max(dict_of_variants, key=dict_of_variants.get)
+
+      # If variants are not unanimous for the barcode/UMI pair,
+      # create an exception entry for the records.
+      if len(dict_of_variants) > 1:
+         entry = [dict_of_variants[a] for a in self.MM ]
+         self.vart_conflicts.append(entry)
+         total = sum(dict_of_variants.values())
+         kept = dict_of_variants[variant]
+         self.thrown_reads += (total - kept)
+
+
+      return variant
+
+
+   def get_MMcode(self, tags):
+      '''The barcodes have a scar (the scarcode) that identifies the
+      kind of mismatch that is generated during the DNA repair. This
+      information can be extracted to specify the variants that are
+      expected in a given set of reads.'''
+
+      # Scarcodes and the corresponding mismatches.
+      refscars = {
+         'CGCTAATTAATG': 0,
+         'GCTAGCAGTCAG': 0,
+         'GCTAGCTCGTTG': 0,
+         'GCTAGCTCCGCA': 0,
+      }
+
+      for tag in tags:
+         try:
+            bcd,umi = tag.split('ATGCTACG')
+            scarcode = bcd[-12:]
+         except ValueError:
+            # The tag may have been tampered with
+            # during the sequence clustering.
+            continue
+         if scarcode in refscars:
+            refscars[scarcode] += 1
+         # Count maximum 1000 barcodes.
+         if sum(refscars.values()) > 10000:
+            break
+
+      winner = max(refscars, key=refscars.get)
+
+      self.MMcode = self.MM[winner]
+      self.prop_wrongMM = float(refscars[winner]) / sum(refscars.values())
+
+      return self.MMcode
 
 
    def write_to_file(self, f):
@@ -224,6 +228,9 @@ class CountingInfo:
 
       # Mismatch type.
       f.write('MM type: %s\n' % self.MMcode)
+
+      # Mismatch type.
+      f.write('Wrong MM: %.2f\n' % (100 * self.prop_wrongMM))
 
       # Total and percent reads lost.
       f.write('Aberrant tags:\t%d\n' % self.aberrant_tags)

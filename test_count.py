@@ -76,19 +76,6 @@ class TestTagNormalizer(unittest.TestCase):
       self.assertEqual(tags, ['AGATGCTACGCG', 'CCATGCTACGAA'])
 
 
-   def test_read_on_TagNormalizer(self):
-      
-      # Mini starcode file (CA).
-      f = StringIO(
-         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
-         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
-         'GCTAGCAGTCAGATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
-      )
-
-      normalizer = count.TagNormalizer(f)
-      mm = count.EventCounter.get_MMcode(normalizer)
-      self.assertEqual(mm, 'CA')
-
 
 class TestCountingInfo(unittest.TestCase):
 
@@ -97,6 +84,49 @@ class TestCountingInfo(unittest.TestCase):
       self.assertEqual(info.fname1, 'fname1')
       self.assertEqual(info.fname2, 'fname2')
 
+
+   def test_get_MMcode(self):
+
+      # Need a CountingInfo instance.
+      info = count.CountingInfo('fname1', 'fname2')
+
+      # Test case 1 (GA).
+      tags = set([
+         'TTCGTGAGATAAATCAGTTGGCTAGCTCGTTGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCTCGTTGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGATGCTACGATCCGTCGGGATACTAAC',
+      ])
+      mm = info.get_MMcode(tags)
+      self.assertEqual(mm, 'GA')
+
+      # Test case 2 (CT).
+      tags = set([
+         'TTCGTGAGATAAATCAGTTGCGCTAATTAATGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGCGCTAATTAATGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCCGCTAATTAATGAATGCTACGATCCGTCGGGATACTAAC',
+      ])
+      mm = info.get_MMcode(tags)
+      self.assertEqual(mm, 'CT')
+
+      # Test case 3 (CA).
+      tags = set([
+         'TTCGTGAGATAAATCAGTTGGCTAGCAGTCAGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCAGTCAGATGCTACGATCCGTCGGGATACTAAC',
+      ])
+      mm = info.get_MMcode(tags)
+      self.assertEqual(mm, 'CA')
+
+      # Test case 4 (GT).
+      tags = set([
+         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCTCCGCAATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCTCCGCAATGCTACGATCCGTCGGGATACTAAC',
+      ])
+      mm = info.get_MMcode(tags)
+      self.assertEqual(mm, 'GT')
+
+
    def test_write_to_file(self):
       info = count.CountingInfo('fname1', 'fname2')
       info.MMcode = 'GA'
@@ -104,6 +134,7 @@ class TestCountingInfo(unittest.TestCase):
       info.aberrant_tags = 2
       info.thrown_reads = 3
       info.vart_conflicts = [(1,2,3)]
+      info.prop_wrongMM = 0.1
 
       buffer = StringIO()
       info.write_to_file(buffer)
@@ -111,6 +142,7 @@ class TestCountingInfo(unittest.TestCase):
       txt = '''fname1
          fname2
          MM type: GA
+         Wrong MM: 10.00
          Aberrant tags:\t2
          Thrown reads:\t3 (3.00%)
          Recombined reads:\t1
@@ -124,20 +156,6 @@ class TestEventCounter(unittest.TestCase):
 
    def test_init(self):
 
-      # Mini starcode file.
-      f = StringIO(
-         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
-         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
-      )
-
-      normalizer = count.TagNormalizer(f)
-      info = count.CountingInfo('fname1', 'fname2')
-
-      # Make sure that the proper exception is raised when
-      # reading the wrong file format.
-      with self.assertRaises(count.SampleIDException):
-         count.EventCounter(normalizer, info)
-
       # Mini starcode file (GA).
       f = StringIO(
          'GCTAGCTCGTTGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
@@ -146,6 +164,7 @@ class TestEventCounter(unittest.TestCase):
       )
 
       normalizer = count.TagNormalizer(f)
+      info = count.CountingInfo('fname1', 'fname2')
       counter = count.EventCounter(normalizer, info)
 
       self.assertEqual(counter.info.MMcode, 'GA') 
@@ -185,55 +204,6 @@ class TestEventCounter(unittest.TestCase):
       counter = count.EventCounter(normalizer, info)
 
       self.assertEqual(counter.info.MMcode, 'GT') 
-
-
-   def test_get_MMcode(self):
-
-      # Test case 1 (GA).
-      tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCGTTGATGCTACGTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCTCGTTGATGCTACGTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGATGCTACGATCCGTCGGGATACTAAC',
-      ])
-      mm = count.EventCounter.get_MMcode(tags)
-      self.assertEqual(mm, 'GA')
-
-      # Test case 2 (CT).
-      tags = set([
-         'TTCGTGAGATAAATCAGTTGCGCTAATTAATGATGCTACGTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGCGCTAATTAATGATGCTACGTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCCGCTAATTAATGAATGCTACGATCCGTCGGGATACTAAC',
-      ])
-      mm = count.EventCounter.get_MMcode(tags)
-      self.assertEqual(mm, 'CT')
-
-      # Test case 3 (CA).
-      tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCAGTCAGATGCTACGTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGATGCTACGTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCAGTCAGATGCTACGATCCGTCGGGATACTAAC',
-      ])
-      mm = count.EventCounter.get_MMcode(tags)
-      self.assertEqual(mm, 'CA')
-
-      # Test case 4 (GT).
-      tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAATGCTACGTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCTCCGCAATGCTACGTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCCGCAATGCTACGATCCGTCGGGATACTAAC',
-      ])
-      mm = count.EventCounter.get_MMcode(tags)
-      self.assertEqual(mm, 'GT')
-
-      # Make sure an exception is raised if more than 10% of the
-      # scarcodes are from different samples.
-      tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAATGCTACGTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGATGCTACGTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGATGCTACGATCCGTCGGGATACTAAC',
-      ])
-      with self.assertRaises(count.SampleIDException):
-         count.EventCounter.get_MMcode(tags)
 
 
    def test_clip_barcode(self):
@@ -293,7 +263,7 @@ class TestEventCounter(unittest.TestCase):
       # Test info gathering.
       self.assertEqual(info.MMcode, 'GA')
       self.assertEqual(info.aberrant_tags, 1)
-      self.assertEqual(info.thrown_reads, 1)
+      self.assertEqual(info.thrown_reads, 2)
       self.assertEqual(len(info.vart_conflicts), 1)
 
 
