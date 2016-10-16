@@ -69,17 +69,14 @@ con_13072_TTAGGC.co.gz    \
 
 all: $(TARGETS)
 
-.INTERMEDIATE: %.pps
-.INTERMEDIATE: %.stc
-
 %.pps: %_read1.fastq.gz %_read2.fastq.gz
 	python preprocess.py $^ > $@
 
 %.stc: %.pps
-	cut -f1 $< | starcode -d3 --print-clusters > $@
+	cut -f1 $< | starcode -d2 --print-clusters > $@
 
 %.co.gz: %.pps %.stc
-	python count.py $^ | gzip > $@
+	python count.py $^ | gzip > $@ && rm $^
 
 clean:
 	rm -rf *.pps *.co.gz

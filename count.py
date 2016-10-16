@@ -74,7 +74,6 @@ class EventCounter:
       expected in a given set of reads.'''
 
       # Scarcodes and the corresponding mismatches.
-
       refscars = {
          'CGCTAATTAATG': 0,
          'GCTAGCAGTCAG': 0,
@@ -83,8 +82,13 @@ class EventCounter:
       }
 
       for tag in tags:
-         bcd,umi = tag.split('aaaaaaaa')
-         scarcode = bcd[-12:]
+         try:
+            bcd,umi = tag.split('ATGCTACG')
+            scarcode = bcd[-12:]
+         except ValueError:
+            # The tag may have been tampered with
+            # during the sequence clustering.
+            continue
          if scarcode in refscars:
             refscars[scarcode] += 1
          # Count maximum 1000 barcodes.
@@ -186,7 +190,7 @@ class TagNormalizer:
       is raised.'''
 
       try:
-         barcode, umi = self.canonical[tag].split('aaaaaaaa')
+         barcode, umi = self.canonical[tag].split('ATGCTACG')
       except (KeyError, ValueError):
          raise AberrantTagException
 
@@ -245,5 +249,8 @@ if __name__ == '__main__':
    info = CountingInfo(sys.argv[1], sys.argv[2])
    try:
       main(sys.argv[1], sys.argv[2], info)
+   except Exception as e:
+      sys.stderr.write(str(e))
+      sys.exit(1)
    finally:
       info.write_to_file(open('counting_logs.txt', 'a'))

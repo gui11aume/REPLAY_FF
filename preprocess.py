@@ -101,9 +101,9 @@ def main(f, g, info):
             BCD,SNP1 = Ex1.extract_tag_and_variant(read1.rstrip())
             UMI,SNP2 = Ex2.extract_tag_and_variant(read2.rstrip())
             # Concatenate the barcode and the UMI into a single
-            # tag. To mark the distrinction, insertion 8 a's in
-            # between. Starcode will keep the lower case.
-            sys.stdout.write('%saaaaaaaa%s\t%s\t%s\n' % \
+            # tag. To mark the distinction, insert ATGCTACG
+            # in between.
+            sys.stdout.write('%sATGCTACG%s\t%s\t%s\n' % \
                   (BCD, UMI, SNP1, SNP2))
          except AberrantReadException:
             info.naberrant += 1

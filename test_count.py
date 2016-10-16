@@ -15,8 +15,8 @@ class TestTagNormalizer(unittest.TestCase):
 
       # Mini starcode file.
       f = StringIO(
-         'AGaaaaaaaaCG\t3\tACaaaaaaaaGC,ACaaaaaaaaCC\n' \
-         'CCaaaaaaaaAA\t9\tCCaaaaaaaaAC,CCaaaaaaaaCA'
+         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
+         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
       )
 
       # Make sure that the internal dictionary has been
@@ -26,7 +26,7 @@ class TestTagNormalizer(unittest.TestCase):
 
       # Make sure that an exception is raised when the input
       # file is not properly formatted.
-      f = StringIO('AGaaaaaaaaCG')
+      f = StringIO('AGATGCTACGCG')
 
       with self.assertRaises(ValueError):
          normalizer = count.TagNormalizer(f)
@@ -36,36 +36,36 @@ class TestTagNormalizer(unittest.TestCase):
 
       # Mini starcode file.
       f = StringIO(
-         'AGaaaaaaaaCG\t3\tACaaaaaaaaGC,ACaaaaaaaaCC\n' \
-         'CCaaaaaaaaAA\t9\tCCaaaaaaaaAC,CCaaaaaaaaCA'
+         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
+         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
       )
 
       normalizer = count.TagNormalizer(f)
 
       # Make sure that the normalizer can normalize tags.
-      bcd,umi = normalizer.normalize('ACaaaaaaaaGC')
+      bcd,umi = normalizer.normalize('ACATGCTACGGC')
       self.assertEqual((bcd,umi), ('AG', 'CG'))
 
-      bcd,umi = normalizer.normalize('ACaaaaaaaaCC')
+      bcd,umi = normalizer.normalize('ACATGCTACGCC')
       self.assertEqual((bcd,umi), ('AG', 'CG'))
 
-      bcd,umi = normalizer.normalize('CCaaaaaaaaAC')
+      bcd,umi = normalizer.normalize('CCATGCTACGAC')
       self.assertEqual((bcd,umi), ('CC', 'AA'))
 
-      bcd,umi = normalizer.normalize('CCaaaaaaaaCA')
+      bcd,umi = normalizer.normalize('CCATGCTACGCA')
       self.assertEqual((bcd,umi), ('CC', 'AA'))
 
       # Make sure that the normalizer raises the proper exception
       # when the tags are not recognized.
       with self.assertRaises(count.AberrantTagException):
-         normalizer.normalize('GGaaaaaaaaGG')
+         normalizer.normalize('GGATGCTACGGG')
 
    def test_iter(self):
 
       # Mini starcode file.
       f = StringIO(
-         'AGaaaaaaaaCG\t3\tACaaaaaaaaGC,ACaaaaaaaaCC\n' \
-         'CCaaaaaaaaAA\t9\tCCaaaaaaaaAC,CCaaaaaaaaCA'
+         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
+         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -73,16 +73,16 @@ class TestTagNormalizer(unittest.TestCase):
       # Make sure that the normalizer can be called directly
       # in a for statement, and use list comprehension for the test.
       tags = sorted([tag for tag in normalizer])
-      self.assertEqual(tags, ['AGaaaaaaaaCG', 'CCaaaaaaaaAA'])
+      self.assertEqual(tags, ['AGATGCTACGCG', 'CCATGCTACGAA'])
 
 
    def test_read_on_TagNormalizer(self):
       
       # Mini starcode file (CA).
       f = StringIO(
-         'GCTAGCAGTCAGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCAGTCAGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCAGTCAGaaaaaaaaA\t1\tGCTAGCAGTCAGaaaaaaaaA'
+         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCAGTCAGATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -126,8 +126,8 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini starcode file.
       f = StringIO(
-         'AGaaaaaaaaCG\t3\tACaaaaaaaaGC,ACaaaaaaaaCC\n' \
-         'CCaaaaaaaaAA\t9\tCCaaaaaaaaAC,CCaaaaaaaaCA'
+         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
+         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -140,9 +140,9 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini starcode file (GA).
       f = StringIO(
-         'GCTAGCTCGTTGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCTCGTTGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCTCGTTGaaaaaaaaA\t1\tGCTAGCAGTCAGaaaaaaaaA'
+         'GCTAGCTCGTTGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCTCGTTGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCTCGTTGATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -152,9 +152,9 @@ class TestEventCounter(unittest.TestCase):
       
       # Mini starcode file (CT).
       f = StringIO(
-         'CGCTAATTAATGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'CGCTAATTAATGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'CGCTAATTAATGaaaaaaaaA\t1\tGCTAGCAGTCAGaaaaaaaaA'
+         'CGCTAATTAATGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'CGCTAATTAATGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'CGCTAATTAATGATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -164,9 +164,9 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini starcode file (CA).
       f = StringIO(
-         'GCTAGCAGTCAGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCAGTCAGaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCAGTCAGaaaaaaaaA\t1\tGCTAGCAGTCAGaaaaaaaaA'
+         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCAGTCAGATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCAGTCAGATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -176,9 +176,9 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini starcode file (GT).
       f = StringIO(
-         'GCTAGCTCCGCAaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCTCCGCAaaaaaaaaT\t1\tGCTAGCAGTCAGaaaaaaaaT\n' \
-         'GCTAGCTCCGCAaaaaaaaaA\t1\tGCTAGCAGTCAGaaaaaaaaA'
+         'GCTAGCTCCGCAATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCTCCGCAATGCTACGT\t1\tGCTAGCAGTCAGATGCTACGT\n' \
+         'GCTAGCTCCGCAATGCTACGA\t1\tGCTAGCAGTCAGATGCTACGA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -191,36 +191,36 @@ class TestEventCounter(unittest.TestCase):
 
       # Test case 1 (GA).
       tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCGTTGaaaaaaaaTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCTCGTTGaaaaaaaaTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGaaaaaaaaATCCGTCGGGATACTAAC',
+         'TTCGTGAGATAAATCAGTTGGCTAGCTCGTTGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCTCGTTGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGATGCTACGATCCGTCGGGATACTAAC',
       ])
       mm = count.EventCounter.get_MMcode(tags)
       self.assertEqual(mm, 'GA')
 
       # Test case 2 (CT).
       tags = set([
-         'TTCGTGAGATAAATCAGTTGCGCTAATTAATGaaaaaaaaTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGCGCTAATTAATGaaaaaaaaTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCCGCTAATTAATGAaaaaaaaaATCCGTCGGGATACTAAC',
+         'TTCGTGAGATAAATCAGTTGCGCTAATTAATGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGCGCTAATTAATGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCCGCTAATTAATGAATGCTACGATCCGTCGGGATACTAAC',
       ])
       mm = count.EventCounter.get_MMcode(tags)
       self.assertEqual(mm, 'CT')
 
       # Test case 3 (CA).
       tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCAGTCAGaaaaaaaaTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGaaaaaaaaTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCAGTCAGaaaaaaaaATCCGTCGGGATACTAAC',
+         'TTCGTGAGATAAATCAGTTGGCTAGCAGTCAGATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCAGTCAGATGCTACGATCCGTCGGGATACTAAC',
       ])
       mm = count.EventCounter.get_MMcode(tags)
       self.assertEqual(mm, 'CA')
 
       # Test case 4 (GT).
       tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAaaaaaaaaTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCTCCGCAaaaaaaaaTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCCGCAaaaaaaaaATCCGTCGGGATACTAAC',
+         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCTCCGCAATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCTCCGCAATGCTACGATCCGTCGGGATACTAAC',
       ])
       mm = count.EventCounter.get_MMcode(tags)
       self.assertEqual(mm, 'GT')
@@ -228,9 +228,9 @@ class TestEventCounter(unittest.TestCase):
       # Make sure an exception is raised if more than 10% of the
       # scarcodes are from different samples.
       tags = set([
-         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAaaaaaaaaTGCGTCGGACAGCGACGC',
-         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGaaaaaaaaTATCTGGCTTCCCGGCCA',
-         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGaaaaaaaaATCCGTCGGGATACTAAC',
+         'TTCGTGAGATAAATCAGTTGGCTAGCTCCGCAATGCTACGTGCGTCGGACAGCGACGC',
+         'AAACTCATCTAAACGTTTTGGCTAGCAGTCAGATGCTACGTATCTGGCTTCCCGGCCA',
+         'CACGCTCTGCATGTTTCCCAGCTAGCTCGTTGATGCTACGATCCGTCGGGATACTAAC',
       ])
       with self.assertRaises(count.SampleIDException):
          count.EventCounter.get_MMcode(tags)
@@ -240,8 +240,8 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini starcode file (GA).
       f = StringIO(
-         'GATGCTAGCTCGTTGaaaaaaaaTAC\t1\tGATGCTAGCTCGTTGaaaaaaaaTAC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaAAA\t1\tGATGCTAGCTCGTTGaaaaaaaaAAA'
+         'GATGCTAGCTCGTTGATGCTACGTAC\t1\tGATGCTAGCTCGTTGATGCTACGTAC\n' \
+         'GATGCTAGCTCGTTGATGCTACGAAA\t1\tGATGCTAGCTCGTTGATGCTACGAAA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -265,9 +265,9 @@ class TestEventCounter(unittest.TestCase):
       
       # Mini starcode file (GA).
       f = StringIO(
-         'GATGCTAGCTCGTTGaaaaaaaaTAC\t1\tGATGCTAGCTCGTTGaaaaaaaaTAC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaGGG\t1\tGATGCTAGCTCGTTGaaaaaaaaGGG\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaAAA\t1\tGATGCTAGCTCGTTGaaaaaaaaAAA'
+         'GATGCTAGCTCGTTGATGCTACGTAC\t1\tGATGCTAGCTCGTTGATGCTACGTAC\n' \
+         'GATGCTAGCTCGTTGATGCTACGGGG\t1\tGATGCTAGCTCGTTGATGCTACGGGG\n' \
+         'GATGCTAGCTCGTTGATGCTACGAAA\t1\tGATGCTAGCTCGTTGATGCTACGAAA'
       )
 
       normalizer = count.TagNormalizer(f)
@@ -276,13 +276,13 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini pps file.
       f = StringIO(
-         'aaaaaaaaaaaaaaaaaaaaaaaaaa\tA\tC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaTAC\tA\tC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaTAC\tA\tC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaTAC\tA\tT\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaAAA\tA\tC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaAAA\tA\tC\n' \
-         'GATGCTAGCTCGTTGaaaaaaaaGGG\tA\tC\n'
+         'ATGCTACGATGCTACGATGCTACGaa\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tT\n' \
+         'GATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n'
       )
 
       out = StringIO()
