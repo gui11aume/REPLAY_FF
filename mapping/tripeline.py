@@ -9,6 +9,7 @@ import sys
 import tempfile
 
 from collections import defaultdict
+from itertools import product
 from itertools import izip
 
 # Others.
@@ -33,21 +34,31 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
    """This function takes the 2 pair-end sequencing files and extracts the
    barcode making sure that the other read contains the transposon."""
 
+   nt = 'CATG'
+   triplets = [A+B+C for A in nt for B in nt for C in nt]
+
    # Those are the scarcodes that allow to identify which
    # experiment is sequenced (CA, GA or GT mismatch).
    matchers = {
+      'CT': seeq.compile('CGCTAATTAATGGAATCATG', 3),
       'CA': seeq.compile('GCTAGCAGTCAGGAATCATG', 3),
       'GA': seeq.compile('GCTAGCTCGTTGGAATCATG', 3),
       'GT': seeq.compile('GCTAGCTCCGCAGAATCATG', 3),
    }
 
+   # The sequencing results are unreliable for the CT mismatch.
+   # There should be 2 indices, but all triplets were observed.
    indexes = {
+      'CT': frozenset(triplets),
       'CA': frozenset(['AAC', 'ACA', 'AGG', 'TTC']),
       'GA': frozenset(['ATT', 'CCG', 'TAA', 'TGC']),
       'GT': frozenset(['ACT', 'ATC', 'TGA', 'TGT']),
    }
 
-   outfiles = {
+   # Assign all valid triplets to a single fasta file for
+   # the CT mismatch. Other files can be properly demultiplexed.
+   outfiles = dict.fromkeys(triplets, open('CT.fasta', 'w'))
+   outfiles.update({
       'AAC': open('CA_AAC.fasta', 'w'),
       'ACA': open('CA_ACA.fasta', 'w'),
       'AGG': open('CA_AGG.fasta', 'w'),
@@ -62,7 +73,7 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
       'CCG': open('GA_CCG.fasta', 'w'),
       'TAA': open('GA_TAA.fasta', 'w'),
       'TGC': open('GA_TGC.fasta', 'w'),
-   }
+   })
 
    # End of the pT2 transposon sequence.
    pT2 = seeq.compile('AAACTTCCGACTTCAACTGTA', 3)

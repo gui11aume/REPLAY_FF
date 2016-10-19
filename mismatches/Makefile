@@ -112,7 +112,22 @@ Gala_48_15625_TAGCTT.co.gz                                                 \
 Gala_48c_15623_ACAGTG.co.gz                                                \
 Gala_48c_15623_ACTTGA.co.gz                                                \
 Gala_48c_15623_ATGTCT.co.gz                                                \
-Gala_48c_15623_GATCAG.co.gz
+Gala_48c_15623_GATCAG.co.gz                                                \
+Gala_48c_15623_GATCAG.co.gz                                                \
+GF6_10536_ACAGTG.co.gz                                                     \
+GF6_10536_ACTTGA.co.gz                                                     \
+GF6_10536_ATCACG.co.gz                                                     \
+GF6_10536_CAGATC.co.gz                                                     \
+GF6_10536_CAGTTC.co.gz                                                     \
+GF6_10536_CGATGT.co.gz                                                     \
+GF6_10536_CTTGTA.co.gz                                                     \
+GF6_10536_GATCAG.co.gz                                                     \
+GF6_10536_GATCTG.co.gz                                                     \
+GF6_10536_GCCAAT.co.gz                                                     \
+GF6_10536_GGCTAC.co.gz                                                     \
+GF6_10536_TAGCTT.co.gz                                                     \
+GF6_10536_TGACCA.co.gz                                                     \
+GF6_10536_TTAGGC.co.gz
 
 
 all: $(TARGETS)
