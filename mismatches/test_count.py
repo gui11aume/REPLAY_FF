@@ -134,7 +134,7 @@ class TestCountingInfo(unittest.TestCase):
       info.aberrant_tags = 2
       info.thrown_reads = 3
       info.vart_conflicts = [(1,2,3)]
-      info.prop_wrongMM = 0.1
+      info.prop_rightMM = 0.9
 
       buffer = StringIO()
       info.write_to_file(buffer)
@@ -142,7 +142,7 @@ class TestCountingInfo(unittest.TestCase):
       txt = '''fname1
          fname2
          MM type: GA
-         Wrong MM: 10.00
+         Right scarcodes: 90.00%
          Aberrant tags:\t2
          Thrown reads:\t3 (3.00%)
          Recombined reads:\t1

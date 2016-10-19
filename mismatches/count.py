@@ -152,7 +152,7 @@ class CountingInfo:
       self.vart_conflicts = []
       self.aberrant_tags = 0
       self.thrown_reads = 0
-      self.prop_wrongMM = 0.0
+      self.prop_rightMM = 0.0
 
 
    def normalize_variant(self, dict_of_variants):
@@ -209,7 +209,7 @@ class CountingInfo:
       winner = max(refscars, key=refscars.get)
 
       self.MMcode = self.MM[winner]
-      self.prop_wrongMM = float(refscars[winner]) / sum(refscars.values())
+      self.prop_rightMM = float(refscars[winner]) / sum(refscars.values())
 
       return self.MMcode
 
@@ -229,8 +229,8 @@ class CountingInfo:
       # Mismatch type.
       f.write('MM type: %s\n' % self.MMcode)
 
-      # Mismatch type.
-      f.write('Wrong MM: %.2f\n' % (100 * self.prop_wrongMM))
+      # Correct scarcodes.
+      f.write('Right scarcodes: %.2f%%\n' % (100 * self.prop_rightMM))
 
       # Total and percent reads lost.
       f.write('Aberrant tags:\t%d\n' % self.aberrant_tags)

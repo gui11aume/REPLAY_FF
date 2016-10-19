@@ -258,16 +258,10 @@ def collect_integrations(fname_starcode_out, fname_mapped, *args):
                   outf.write('\t'.join(array) + '\n')
                except IndexError:
                   continue
-   return
-   # Done.
    
 
 def main(fname_fastq1, fname_fastq2, *args):
    extract_reads_from_PE_fastq(fname_fastq1, fname_fastq2)
-   #fname_mapped = call_gem_mapper_on_fasta_file(fname_fasta)
-   #fname_starcode = call_starcode_on_mapped_file(fname_mapped)
-   #fnames_extra = [call_starcode_on_fastq_file(fname) for fname in args]
-   #collect_integrations(fname_starcode, fname_mapped, *fnames_extra)
 
 
 if __name__ == '__main__':

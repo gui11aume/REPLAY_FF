@@ -4,5 +4,6 @@
 *_insertions.txt
 *_logs.txt
 *.pps
-*.co
+*.co.gz
 *.stc
+*.ins
