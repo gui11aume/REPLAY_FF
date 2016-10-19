@@ -24,7 +24,7 @@ $(FASTA):
 # The secondary expansions will allow to replace the matching
 # stem of the rule by the variables declared above.
 %.ins: $$(addsuffix .map, $$($$*)) $$(addsuffix .stc, $$($$*))
-	pyhton collect.py $^ > $@
+	python collect.py $^ > $@
 
 cleantmp:
 	rm -f *.fasta *.map
