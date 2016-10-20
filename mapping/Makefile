@@ -15,9 +15,9 @@ all: $(TARGETS)
 
 # This creates all fasta files (see definition of 'FASTA').
 $(FASTA):
-	python tripeline.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
+	python makefasta_nextseq.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
 		/data/GF2-iPCR-pT2FF_R2.fastq.gz
-	python tripeline.py /data/MM_M_14930_read1.fastq.gz \
+	python makefasta_hiseq.py /data/MM_M_14930_read1.fastq.gz \
 		/data/MM_M_14930_read2.fastq.gz
 
 %.map: %.fasta

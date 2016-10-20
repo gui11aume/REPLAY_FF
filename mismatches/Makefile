@@ -52,19 +52,6 @@ CA_48c_15638_ACAGTG.co.gz                                                  \
 CA_48c_15638_ACTTGA.co.gz                                                  \
 CA_48c_15638_ATGTCT.co.gz                                                  \
 CA_48c_15638_GATCAG.co.gz                                                  \
-24_13073_GCCAAG.co.gz                                                      \
-24_13073_GTTCAC.co.gz                                                      \
-24_13073_TCTTAG.co.gz                                                      \
-24_13073_TGCAGT.co.gz                                                      \
-48_13074_ATGTCT.co.gz                                                      \
-48_13074_GCTGAA.co.gz                                                      \
-48_13074_TAGGAC.co.gz                                                      \
-48_13074_TCTACA.co.gz                                                      \
-con_13072_AGCTTG.co.gz                                                     \
-con_13072_CGATGT.co.gz                                                     \
-con_13072_CTGGAT.co.gz                                                     \
-con_13072_TTAGGC.co.gz                                                     \
-con_13072_TTAGGC.co.gz                                                     \
 GTLa_24_15479_CGATGT.co.gz                                                 \
 GTLa_24_15479_GTTCAC.co.gz                                                 \
 GTLa_24_15479_TCTTAG.co.gz                                                 \
@@ -114,21 +101,18 @@ Gala_48c_15623_ACTTGA.co.gz                                                \
 Gala_48c_15623_ATGTCT.co.gz                                                \
 Gala_48c_15623_GATCAG.co.gz                                                \
 Gala_48c_15623_GATCAG.co.gz                                                \
-GF6_10536_ACAGTG.co.gz                                                     \
-GF6_10536_ACTTGA.co.gz                                                     \
-GF6_10536_ATCACG.co.gz                                                     \
-GF6_10536_CAGATC.co.gz                                                     \
-GF6_10536_CAGTTC.co.gz                                                     \
-GF6_10536_CGATGT.co.gz                                                     \
-GF6_10536_CTTGTA.co.gz                                                     \
-GF6_10536_GATCAG.co.gz                                                     \
-GF6_10536_GATCTG.co.gz                                                     \
-GF6_10536_GCCAAT.co.gz                                                     \
-GF6_10536_GGCTAC.co.gz                                                     \
-GF6_10536_TAGCTT.co.gz                                                     \
-GF6_10536_TGACCA.co.gz                                                     \
-GF6_10536_TTAGGC.co.gz
-
+24_13073_GCCAAG.co.gz                                                      \
+24_13073_GTTCAC.co.gz                                                      \
+24_13073_TCTTAG.co.gz                                                      \
+24_13073_TGCAGT.co.gz                                                      \
+48_13074_ATGTCT.co.gz                                                      \
+48_13074_GCTGAA.co.gz                                                      \
+48_13074_TAGGAC.co.gz                                                      \
+48_13074_TCTACA.co.gz                                                      \
+con_13072_AGCTTG.co.gz                                                     \
+con_13072_CGATGT.co.gz                                                     \
+con_13072_CTGGAT.co.gz                                                     \
+con_13072_TTAGGC.co.gz                                                     \
 
 all: $(TARGETS)
 
