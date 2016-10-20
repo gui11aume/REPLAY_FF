@@ -1,16 +1,19 @@
 TARGETS= CT.ins CA.ins GT.ins GA.ins
 
-.SECONDEXPANSION:
 CT= CT
 CA= CA_AAC CA_AGG CA_TTC CA_ACA 
 GT= GT_ATC GT_TGA GT_ACT GT_TGT
 GA= GA_ATT GA_TAA GA_TGC GA_CCG
 
-FASTA= $(addsuffix .fasta, $(CA) $(GT) $(GA) $(CT))
+# Note that we add a % sign here. This will generate
+# a pattern rule with multiple targets, which is the
+# only way to tell Make that all fasta files are generated
+# by the same command.
+FASTA= $(addsuffix %fasta, $(CA) $(GT) $(GA) $(CT))
 
 all: $(TARGETS)
 
-# This creates all fasta files.
+# This creates all fasta files (see definition of 'FASTA').
 $(FASTA):
 	python tripeline.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
 		/data/GF2-iPCR-pT2FF_R2.fastq.gz
@@ -27,11 +30,12 @@ $(FASTA):
 
 # The secondary expansions will allow to replace the matching
 # stem of the rule by the variables declared above.
+.SECONDEXPANSION:
 %.ins: $$(addsuffix .map, $$($$*)) $$(addsuffix .stc, $$($$*))
 	python collect.py $^ > $@
 
 cleantmp:
-	rm -f *.fasta *.map *.stc
+	rm -f *.fasta *.map *.stc .fasta
 
 clean:
 	rm -f *fasta *.map *.stc *.ins
