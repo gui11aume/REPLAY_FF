@@ -113,6 +113,18 @@ con_13072_AGCTTG.co.gz                                                     \
 con_13072_CGATGT.co.gz                                                     \
 con_13072_CTGGAT.co.gz                                                     \
 con_13072_TTAGGC.co.gz                                                     \
+LA_24_13508_AGCTTG.co.gz                                                   \
+LA_24_13508_CGATGT.co.gz                                                   \
+LA_24_13508_TCTTAG.co.gz                                                   \
+LA_24_13508_TGCAGT.co.gz                                                   \
+LA_48_13509_ATGTCT.co.gz                                                   \
+LA_48_13509_GCCAAG.co.gz                                                   \
+LA_48_13509_GTTCAC.co.gz                                                   \
+LA_48_13509_TTAGGC.co.gz                                                   \
+LA_c_13507_CTGGAT.co.gz                                                    \
+LA_c_13507_GCTGAA.co.gz                                                    \
+LA_c_13507_TAGGAC.co.gz                                                    \
+LA_c_13507_TCTACA.co.gz                                                    \
 
 all: $(TARGETS)
 
