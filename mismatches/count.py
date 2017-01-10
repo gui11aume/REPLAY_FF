@@ -75,6 +75,7 @@ class EventCounter:
             continue
          self.events[bcd][umi][(V1,V2)] += 1
 
+      # TODO: insert header before output.
       for bcd,dict_of_umis in self.events.items():
          counter = defaultdict(int)
          for umi,dict_of_variants in dict_of_umis.items():
@@ -93,7 +94,7 @@ class EventCounter:
          # is empty and there is nothing to show.
          if not counter:
             continue
-         # Show counts.
+         # Show counts (FF, AT, GC).
          counts = '\t'.join(['%d' % counter[a] for a in self.MM])
          outf.write('%s\t%s\n' % (bcd, counts))
 
