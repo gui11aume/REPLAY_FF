@@ -75,18 +75,20 @@ class EventCounter:
             continue
          self.events[bcd][umi][(V1,V2)] += 1
 
-      # TODO: insert header before output.
+      # Header of the file.
+      outf.write('barcode\tFF\tAT\tGC\n')
+
       for bcd,dict_of_umis in self.events.items():
          counter = defaultdict(int)
          for umi,dict_of_variants in dict_of_umis.items():
-            # Discard all unique reads.
+            # Discard all unique read.
             if sum(dict_of_variants.values()) < 2:
-               self.info.thrown_reads += 1
+               self.info.too_few_reads += 1
                continue
             # Discard UMIs used multiple times.
             S = [1 for (a,b) in reverse_lookup[umi].items() if b > 1]
             if len(S) > 1:
-               self.info.thrown_reads += sum(dict_of_variants.values())
+               self.info.non_unique_UMI += sum(dict_of_variants.values())
                continue
             variant = self.info.normalize_variant(dict_of_variants)
             counter[variant] += 1
@@ -128,12 +130,21 @@ class TagNormalizer:
       try:
          barcode, umi = self.canonical[tag].split('ATGCTACG')
       except (KeyError, ValueError):
+         # In case the spacer is not present or the tag
+         # is not indexed, report aberrant tag.
+         raise AberrantTagException
+
+      # Do not report empty barcodes or
+      # UMIs and report aberrant tag.
+      if not barcode or not umi:
          raise AberrantTagException
 
       return barcode, umi
 
 
 class CountingInfo:
+   '''Store general information regarding the couting process for
+   quality control and troubleshooting.'''
 
    # MMcodes and their scarcodes.
    MM = {
@@ -152,7 +163,9 @@ class CountingInfo:
 
       self.vart_conflicts = []
       self.aberrant_tags = 0
-      self.thrown_reads = 0
+      self.too_few_reads = 0
+      self.non_unique_UMI = 0
+      self.minority_report = 0
       self.prop_rightMM = 0.0
 
 
@@ -173,7 +186,7 @@ class CountingInfo:
          self.vart_conflicts.append(entry)
          total = sum(dict_of_variants.values())
          kept = dict_of_variants[variant]
-         self.thrown_reads += (total - kept)
+         self.minority_report += (total - kept)
 
 
       return variant
@@ -234,11 +247,19 @@ class CountingInfo:
       f.write('Right scarcodes: %.2f%%\n' % (100 * self.prop_rightMM))
 
       # Total and percent reads lost.
-      f.write('Aberrant tags:\t%d\n' % self.aberrant_tags)
-      percent = 100 * float(self.thrown_reads) / self.nreads
-      f.write('Thrown reads:\t%d (%.2f%%)\n' % \
-            (self.thrown_reads, percent))
-      f.write('Recombined reads:\t%d\n' % len(self.vart_conflicts))
+      f.write('Reads lost to:\n')
+      percent = 100 * float(self.aberrant_tags) / self.nreads
+      f.write('  Aberrant tags:\t%d (%.2f%%)\n' % \
+            (self.aberrant_tags, percent))
+      percent = 100 * float(self.too_few_reads) / self.nreads
+      f.write('  Too few reads:\t%d (%.2f%%)\n' % \
+            (self.too_few_reads, percent))
+      percent = 100 * float(self.non_unique_UMI) / self.nreads
+      f.write('  Non unique UMI:\t%d (%.2f%%)\n' % \
+            (self.non_unique_UMI, percent))
+      percent = 100 * float(self.minority_report) / self.nreads
+      f.write('  Minority report:\t%d (%.2f%%)\n' % \
+            (self.minority_report, percent))
 
       # End of report.
       f.write('---\n')
@@ -254,6 +275,7 @@ def main(fname1, fname2, info):
 
 
 if __name__ == '__main__':
+   # Initialize CountingInfo object to monitor the process.
    info = CountingInfo(sys.argv[1], sys.argv[2])
    try:
       main(sys.argv[1], sys.argv[2], info)

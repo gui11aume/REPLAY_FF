@@ -132,8 +132,9 @@ class TestCountingInfo(unittest.TestCase):
       info.MMcode = 'GA'
       info.nreads = 100
       info.aberrant_tags = 2
-      info.thrown_reads = 3
-      info.vart_conflicts = [(1,2,3)]
+      info.too_few_reads = 3
+      info.non_unique_UMI = 2
+      info.minority_report = 1
       info.prop_rightMM = 0.9
 
       buffer = StringIO()
@@ -143,9 +144,11 @@ class TestCountingInfo(unittest.TestCase):
          fname2
          MM type: GA
          Right scarcodes: 90.00%
-         Aberrant tags:\t2
-         Thrown reads:\t3 (3.00%)
-         Recombined reads:\t1
+         Reads lost to:
+           Aberrant tags:\t2 (2.00%)
+           Too few reads:\t3 (3.00%)
+           Non unique UMI:\t2 (2.00%)
+           Minority report:\t1 (1.00%)
          ---'''
 
       check = '\n'.join(buffer.getvalue().splitlines()[1:])
@@ -246,6 +249,11 @@ class TestEventCounter(unittest.TestCase):
 
       # Mini pps file.
       f = StringIO(
+         # Read 1 is aberrant (wrong scarcode).
+         # Read 2-3 are identical and normal.
+         # Read 4 is in conflict with reads 2-3.
+         # Read 5-6 are identical and normal.
+         # Read 7 is normal but discarded (unique read).
          'ATGCTACGATGCTACGATGCTACGaa\tA\tC\n' \
          'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
          'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
@@ -258,12 +266,14 @@ class TestEventCounter(unittest.TestCase):
       out = StringIO()
       counter.count(f, out)
 
-      self.assertEqual(out.getvalue(), 'GAT\t2\t0\t0\n')
+      self.assertEqual(out.getvalue(),
+         'barcode\tFF\tAT\tGC\nGAT\t2\t0\t0\n')
 
       # Test info gathering.
       self.assertEqual(info.MMcode, 'GA')
       self.assertEqual(info.aberrant_tags, 1)
-      self.assertEqual(info.thrown_reads, 2)
+      self.assertEqual(info.too_few_reads, 1)
+      self.assertEqual(info.minority_report, 1)
       self.assertEqual(len(info.vart_conflicts), 1)
 
 

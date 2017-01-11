@@ -106,6 +106,9 @@ def main(f, g, info):
             sys.stdout.write('%sATGCTACG%s\t%s\t%s\n' % \
                   (BCD, UMI, SNP1, SNP2))
          except AberrantReadException:
+            # Count aberrant reads. They are all the reads for
+            # which either the prefix or the suffix could not
+            # be found.
             info.naberrant += 1
             continue
 
