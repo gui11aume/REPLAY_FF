@@ -37,7 +37,6 @@ GT_48c_15431_ATGTCT.co.gz                                                  \
 GT_48c_15431_GATCAG.co.gz                                                  \
 CA_24_15639_CGATGT.co.gz                                                   \
 CA_24_15639_GTTCAC.co.gz                                                   \
-CA_24_15639_GTTCAC.co.gz                                                   \
 CA_24_15639_TCTTAG.co.gz                                                   \
 CA_24_15639_TGCAGT.co.gz                                                   \
 CA_24c_15637_AGCTTG.co.gz                                                  \
@@ -125,14 +124,6 @@ LA_c_13507_CTGGAT.co.gz                                                    \
 LA_c_13507_GCTGAA.co.gz                                                    \
 LA_c_13507_TAGGAC.co.gz                                                    \
 LA_c_13507_TCTACA.co.gz                                                    \
-CA_cpl_17140_AGCTTG.co.gz                                                  \
-CA_pl_17141_GTTCAC.co.gz                                                   \
-CT_cpl_17144_TGCAGT.co.gz                                                  \
-CT_pl_17145_TCTTAG.co.gz                                                   \
-GA_cpl_17142_GCCAAG.co.gz                                                  \
-GA_pl_17143_ATGTCT.co.gz                                                   \
-GT_cpl_17146_TCTACA.co.gz                                                  \
-GT_pl_17147_GCTGAA.co.gz                                                   \
 
 all: $(TARGETS)
 

@@ -1,15 +1,24 @@
-TARGETS= CT.ins CA.ins GT.ins GA.ins
+INSERTIONS = \
+	CT1.ins CA1.ins GT1.ins GA1.ins \
+	CT2.ins CA2.ins GT2.ins GA2.ins 
 
-CT= CT
-CA= CA_AAC CA_AGG CA_TTC CA_ACA 
-GT= GT_ATC GT_TGA GT_ACT GT_TGT
-GA= GA_ATT GA_TAA GA_TGC GA_CCG
+TARGETS= $(INSERTIONS) black.lst
+
+CT1= CT_ACG
+CT2= CT_TCT
+CA1= CA_AAC CA_TTC
+CA2= CA_AGG CA_ACA 
+GT1= GT_ATC GT_TGT
+GT2= GT_TGA GT_ACT
+GA1= GA_ATT GA_TAA
+GA2= GA_TGC GA_CCG
 
 # Note that we add a % sign here. This will generate
 # a pattern rule with multiple targets, which is the
 # only way to tell Make that all fasta files are generated
 # by the same command.
-FASTA= $(addsuffix %fasta, $(CA) $(GT) $(GA) $(CT))
+FASTA= $(addsuffix %fasta, $(CA1) $(GT1) $(GA1) $(CT1) \
+       $(CA2) $(GT2) $(GA2) $(CT2))
 
 all: $(TARGETS)
 
@@ -34,8 +43,11 @@ $(FASTA):
 %.ins: $$(addsuffix .map, $$($$*)) $$(addsuffix .stc, $$($$*))
 	python collect.py $^ > $@
 
+black.lst: $(INSERTIONS)
+	python make_blacklist.py $^ > $@
+
 cleantmp:
-	rm -f *.fasta *.map *.stc .fasta
+	rm -f *.fasta *.map *.stc
 
 clean:
-	rm -f *fasta *.map *.stc *.ins
+	rm -f *fasta *.map *.stc *.ins *.bcd

@@ -14,6 +14,9 @@ from gzopen import gzopen
 def trimSuffix(matcher, txt):
    return matcher.matchPrefix(txt, False) or ''
 
+def trimPrefix(matcher, txt):
+   return matcher.matchSuffix(txt, False) or ''
+
 ########  Mapping Pipeline ###############################################
 
 def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
@@ -80,6 +83,10 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
             if idx in indexes[MM]:
                outf = outfiles[idx]
                outf.write('>%s\n%s\n' % (brcd,genome))
+
+            # If the script reaches this point, the mismatch was
+            # already identified (even though nothing may be
+            # printed) so there is no need to check the others.
             break
 
 if __name__ == '__main__':

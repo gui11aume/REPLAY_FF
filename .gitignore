@@ -4,6 +4,12 @@
 *_insertions.txt
 *_logs.txt
 *.pps
-*.co.gz
+*.gz
 *.stc
 *.ins
+*.gtf
+*.pdf
+*.rda
+*.bcd
+data/RT_D3_EBM6_All.txt
+mapping/black.lst

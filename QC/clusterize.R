@@ -1,0 +1,75 @@
+compare = function(df1, df2) {
+
+   if (nrow(df1) < 10 || nrow(df2) < 10) {
+      return (0)
+   }
+
+   # Columns are: barcode, FF, AT, GC.
+   x1 = df1[,3] / (df1[,3] + df1[,4])
+   x2 = df2[,3] / (df2[,3] + df2[,4])
+
+   df1 = data.frame(bcd=df1[,1],
+               x1 = df1[,3]/(df1[,3]+df1[,4]),
+               w1 = df1[,3]+df1[,4])
+   df2 = data.frame(bcd=df2[,1],
+               x2 = df2[,3]/(df2[,3]+df2[,4]),
+               w2 = df2[,3]+df2[,4])
+
+   # Match barcodes across experiments.
+   m = merge(df1, df2, by="bcd", all=TRUE)
+   m[is.na(m)] = 0
+
+   cov.wt(m[,c('x1','x2')], wt=m$w1+m$w2,
+          center=FALSE, cor=TRUE)$cor[1,2]
+
+}
+
+fnames = commandArgs(trailingOnly = TRUE)
+
+if (!file.exists("sim.rda")) {
+
+   # Compute the similarity matrix.
+   barcodes = list(
+      CA = read.table("../mapping/CA.ins", as.is=TRUE)$V1,
+      CT = read.table("../mapping/CT.ins", as.is=TRUE)$V1,
+      GA = read.table("../mapping/GA.ins", as.is=TRUE)$V1,
+      GT = read.table("../mapping/GT.ins", as.is=TRUE)$V1
+   )
+   # Add other mismatch codes.
+   barcodes[['24']] = barcodes[['48']] =
+      barcodes[['LA']] = barcodes[['CT']]
+
+   files = list()
+   enames = sub(".*?([^/]+)\\.co\\.gz", "\\1", fnames)
+
+   for (i in 1:length(fnames)) {
+      # Filter contaminating barcodes.
+      mmcode = toupper(substr(enames[i], 1,2))
+      files[[i]] = subset(read.delim(fnames[i], as.is=TRUE),
+                       barcode %in% barcodes[[mmcode]])
+      if (nrow(files[[i]]) < 10) {
+         cat(paste("sample swap:", enames[i], "\n"))
+      }
+   }
+
+   sim = matrix(0, nrow=length(fnames), ncol=length(fnames))
+   for (i in 1:(length(fnames)-1)) {
+   for (j in (i+1):length(fnames)) {
+      sim[i,j] = sim[j,i] = compare(files[[i]], files[[j]])
+   }
+   }
+
+   colnames(sim) = enames
+   save(sim, file="sim.rda")
+
+} else {
+   load("sim.rda")
+}
+
+h = hclust(as.dist(1-sim))
+
+pdf("clusters.pdf", useDingbats=FALSE, width=18, height=8)
+plot(h, xlab="Correlation between experiments")
+#pdf("heatmap.pdf", useDingbats=FALSE)
+#image(sim[h$order,h$order][1:35,1:35], col=colorRampPalette(c("white", "black"))(256))
+dev.off()

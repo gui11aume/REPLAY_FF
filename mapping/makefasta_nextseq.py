@@ -17,19 +17,33 @@ def trimSuffix(matcher, txt):
 ########  Mapping Pipeline ###############################################
 
 def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
-   """This function takes the 2 pair-end sequencing files and extracts the
-   barcode making sure that the other read contains the transposon."""
+   """This function takes the 2 pair-end sequencing files and extracts
+   the barcode making sure that the other read contains the
+   transposon."""
 
-   # Those are the scarcodes that allow to identify which
-   # experiment is sequenced (CA, GA or GT mismatch).
+   # This is the scarcode that allows to identify which
+   # experiment is sequenced (must be CT).
    matcher = seeq.compile('CGCTAATTAATGGAATCATG', 3)
 
-   outf = open('CT.fasta', 'w')
+   outf1 = open('CT_TCT.fasta', 'w')
+   outf2 = open('CT_ACG.fasta', 'w')
+
+   # There are many errors in the index, especially in the
+   # first base. The most frequent errors are hard coded
+   # in the dictionary so that the reads are written to the
+   # proper file.
+   outfiles = {
+      'TCT': outf1,
+      'GCT': outf1,
+      'ACT': outf1,
+      'ACG': outf2,
+      'AGG': outf2,
+      'CCG': outf2,
+   }
 
    with gzopen(fname_iPCR_PE1) as f, gzopen(fname_iPCR_PE2) as g:
-      # Aggregate iterator of f,g iterators -> izip(f,g).
       for lineno,(line1,line2) in enumerate(izip(f,g)):
-         # Take sequence lines of the fastq file.
+         # Take sequence lines of the fastq files.
          if lineno % 4 != 1: continue
 
          brcd = trimSuffix(matcher, line1)
@@ -37,13 +51,18 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
          # then the scarcode must have been the right one.
          if len(brcd) < 13 or len(brcd) > 25: continue
 
-         # Remove first 25 nucleotides, split o "CATG" and take
+         # Remove first 25 nucleotides, split on "CATG" and take
          # the first fragment. If genome fragment is too short
          # for mapping then throw it away.
          genome = line2.rstrip()[25:].split('CATG')[0]
          if len(genome) < 18: continue
 
-         outf.write('>%s\n%s\n' % (brcd,genome))
+         # The first 3 nucleotides of the reverse read are the
+         # index. Check that it belongs to the right group.
+         idx = line2[:3]
+         if idx in outfiles:
+            outf = outfiles[idx]
+            outf.write('>%s\n%s\n' % (brcd,genome))
 
 if __name__ == '__main__':
    extract_reads_from_PE_fastq(sys.argv[1], sys.argv[2])

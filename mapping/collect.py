@@ -14,13 +14,14 @@ import seeq
 
 from gzopen import gzopen
 
+FASTASEQ = "/data/mm10_pT2.fasta"
 LOGFNAME = 'tripelog.txt'
 
 class FormatException(Exception):
    pass
 
-def collect_integrations(mapfnames, stcfnames):
-   """This function reads the stacode outputs and changes all the
+def collect_integrations(mapfnames, stcfnames, genome):
+   """This function reads the starcode outputs and changes all the
    barcodes mapped by their canonicals while it calculates the
    mapped distance rejecting multiple mapping integrations or
    unmmaped ones. It also counts the frequency that each barcode
@@ -94,15 +95,49 @@ def collect_integrations(mapfnames, stcfnames):
    for brcd in sorted(integrations, key=lambda x: integrations.get(x)):
       try:
          (chrom,pos,strand),total = integrations[brcd]
-      except ValueError:
+         (GC10kb, GC1Mb) = compute_GC(chrom, pos, genome)
+      except (ValueError, KeyError):
          continue
-      print '%s\t%s\t%s\t%d\t%d' % (brcd,chrom,strand,pos,total)
+      print '%s\t%s\t%s\t%d\t%d\t%.2f\t%.2f' % \
+            (brcd,chrom,strand,pos,total,GC10kb,GC1Mb)
    
+def read_genome(f):
+   '''Read a fasta file and return a dictionary whose keys are the
+   sequence names and values are the sequences in text format.
+   Remove pT2 and weird chromosomes.'''
+
+   genome = dict()
+   txt = f.read()
+   segments = txt.split('>')
+   for segment in segments:
+      if not segment: continue
+      (header,seq) = segment.split('\n', 1)
+      name = re.sub(r'\s.*', '', header)
+      # Remove "chrUn_GL456385' etc. and pT2
+      if '_' in name or 'pT2' in name: continue
+      genome[name] = seq.replace('\n', '')
+   return genome
+
+def compute_GC(chrom, pos, genome):
+   seq = genome[chrom]
+   seq10kb = seq[(pos-5000):(pos+5000)].upper()
+   seq1Mb = seq[(pos-500000):(pos+500000)].upper()
+
+   GC10kb = (seq10kb.count("G") + seq10kb.count("C")) / \
+      float(len(seq10kb) - seq10kb.count("N"))
+   GC1Mb = (seq1Mb.count("G") + seq1Mb.count("C")) / \
+      float(len(seq1Mb) - seq1Mb.count("N"))
+
+   return (GC10kb,GC1Mb)
 
 if __name__ == '__main__':
+   # Import the mouse genome and make a dictionary out of it.
+   with open(FASTASEQ) as f:
+      mm10 = read_genome(f)
+
    # Expects an array of .map files followed by an array
    # of .stc files. Use the extensions to sort them out.
    mapfiles = [f for f in sys.argv[1:] if '.map' in f]
    stcfiles = [f for f in sys.argv[1:] if '.stc' in f]
 
-   collect_integrations(mapfiles, stcfiles)
+   collect_integrations(mapfiles, stcfiles, mm10)

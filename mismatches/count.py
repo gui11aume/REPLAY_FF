@@ -7,8 +7,12 @@ import sys
 
 from collections import defaultdict
 
+MIN_BCD_LEN = 5
 
-class AberrantTagException(Exception):
+class NoCanonicalBarcodeException(Exception):
+   pass
+
+class WrongScarcodeException(Exception):
    pass
 
 
@@ -35,23 +39,29 @@ class EventCounter:
          'CT': (('T', 'G'), ('T', 'A'), ('C', 'G')),
       }
 
-      clip = {
+      scarcode = {
          'CT': seeq.compile('CGCTAATTAATG', 2),
          'CA': seeq.compile('GCTAGCAGTCAG', 2),
          'GA': seeq.compile('GCTAGCTCGTTG', 2),
          'GT': seeq.compile('GCTAGCTCCGCA', 2),
       }
 
+      # Use the starcode file of the normalizer in order
+      # to retrieve a representative fraction of the
+      # scarcode and to infer the mismatch code.
       self.info.get_MMcode(normalizer)
 
       self.MM = assign[self.info.MMcode]
-      self.clip = clip[self.info.MMcode]
+      self.scarcode = scarcode[self.info.MMcode]
 
 
-   def clip_barcode(self, bcd):
-      bcd = self.clip.matchPrefix(bcd, False)
+   def remove_scarcode(self, bcd):
+      # Get the barcode proper by removing the scarcode
+      bcd = self.scarcode.matchPrefix(bcd, False)
       if bcd is None:
-         raise AberrantTagException
+         # In case the scarcode was not
+         # found raise an exception
+         raise WrongScarcodeException
       return bcd
 
 
@@ -68,10 +78,15 @@ class EventCounter:
          tag, V1, V2 = line.split()
          try:
             bcd, umi = self.normalize_tag(tag)
-            bcd = self.clip_barcode(bcd)
+            bcd = self.remove_scarcode(bcd)
             reverse_lookup[umi][bcd] += 1
-         except AberrantTagException:
-            self.info.aberrant_tags += 1
+         except NoCanonicalBarcodeException:
+            continue
+         except WrongScarcodeException:
+            self.info.wrong_scarcode += 1
+            continue
+         if len(bcd) < MIN_BCD_LEN:
+            self.info.barcode_too_short += 1
             continue
          self.events[bcd][umi][(V1,V2)] += 1
 
@@ -92,7 +107,7 @@ class EventCounter:
                continue
             variant = self.info.normalize_variant(dict_of_variants)
             counter[variant] += 1
-         # If all UMIs were single read, the counter
+         # If all UMIs were lost, the counter
          # is empty and there is nothing to show.
          if not counter:
             continue
@@ -103,7 +118,10 @@ class EventCounter:
 
 
 class TagNormalizer:
-   '''Correct reading errors.'''
+   '''Correct reading errors. This object encapsulates a starcode
+   file in order to normalize barcodes and UMIs. It also contains
+   an iterator to read the starcode file, so for practical purposes
+   a 'TagNormalizer' "is" a starcode file.'''
 
    def __init__(self, f):
       '''Construct a normalizer from open Starcode file.'''
@@ -124,7 +142,7 @@ class TagNormalizer:
    def normalize(self, tag):
       '''Replace the tag by its canonical sequence (where errors
       are reverted). Sperate the barcode from the UMI and returns
-      both as a pair. In case of failure, an AberrantTag exception
+      both as a pair. In case of failure, a 'NoCanonicalBarcodeException' 
       is raised.'''
 
       try:
@@ -132,12 +150,7 @@ class TagNormalizer:
       except (KeyError, ValueError):
          # In case the spacer is not present or the tag
          # is not indexed, report aberrant tag.
-         raise AberrantTagException
-
-      # Do not report empty barcodes or
-      # UMIs and report aberrant tag.
-      if not barcode or not umi:
-         raise AberrantTagException
+         raise NoCanonicalBarcodeException
 
       return barcode, umi
 
@@ -160,13 +173,14 @@ class CountingInfo:
       self.fname2 = fname2
 
       self.nreads = 0
+      self.used_reads = 0
 
       self.vart_conflicts = []
-      self.aberrant_tags = 0
+      self.wrong_scarcode = 0
+      self.barcode_too_short = 0
       self.too_few_reads = 0
       self.non_unique_UMI = 0
       self.minority_report = 0
-      self.prop_rightMM = 0.0
 
 
    def normalize_variant(self, dict_of_variants):
@@ -187,6 +201,7 @@ class CountingInfo:
          total = sum(dict_of_variants.values())
          kept = dict_of_variants[variant]
          self.minority_report += (total - kept)
+         self.used_reads += kept
 
 
       return variant
@@ -216,14 +231,13 @@ class CountingInfo:
             continue
          if scarcode in refscars:
             refscars[scarcode] += 1
-         # Count maximum 1000 barcodes.
+         # Count maximum 10000 barcodes.
          if sum(refscars.values()) > 10000:
             break
 
       winner = max(refscars, key=refscars.get)
 
       self.MMcode = self.MM[winner]
-      self.prop_rightMM = float(refscars[winner]) / sum(refscars.values())
 
       return self.MMcode
 
@@ -243,14 +257,19 @@ class CountingInfo:
       # Mismatch type.
       f.write('MM type: %s\n' % self.MMcode)
 
-      # Correct scarcodes.
-      f.write('Right scarcodes: %.2f%%\n' % (100 * self.prop_rightMM))
+      # Total and percent used reads.
+      percent = 100 * float(self.used_reads) / self.nreads
+      f.write('Used reads:\t%d (%.2f%%)\n' % \
+            (self.used_reads, percent))
 
       # Total and percent reads lost.
       f.write('Reads lost to:\n')
-      percent = 100 * float(self.aberrant_tags) / self.nreads
-      f.write('  Aberrant tags:\t%d (%.2f%%)\n' % \
-            (self.aberrant_tags, percent))
+      percent = 100 * float(self.wrong_scarcode) / self.nreads
+      f.write('  Wrong scarcode:\t%d (%.2f%%)\n' % \
+            (self.wrong_scarcode, percent))
+      percent = 100 * float(self.barcode_too_short) / self.nreads
+      f.write('  Barcode too short:\t%d (%.2f%%)\n' % \
+            (self.barcode_too_short, percent))
       percent = 100 * float(self.too_few_reads) / self.nreads
       f.write('  Too few reads:\t%d (%.2f%%)\n' % \
             (self.too_few_reads, percent))
@@ -269,6 +288,7 @@ class CountingInfo:
 def main(fname1, fname2, info):
    # Instantiate and run tools for the analysis.
    with open(fname1) as f, open(fname2) as g:
+      # Create a normalizer encapsulating the starcode file.
       normalizer = TagNormalizer(g)
       counter = EventCounter(normalizer, info)
       counter.count(f)
