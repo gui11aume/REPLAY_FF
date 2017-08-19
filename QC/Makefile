@@ -49,22 +49,6 @@ all:
 		../mismatches/GA_48c_15172_ATGTCT.co.gz     \
 		../mismatches/GA_48c_15172_GATCAG.co.gz     \
 		../mismatches/GA_48c_15172_TCTACA.co.gz     \
-		../mismatches/Gala_24_15624_CGATGT.co.gz    \
-		../mismatches/Gala_24_15624_GTTCAC.co.gz    \
-		../mismatches/Gala_24_15624_TCTTAG.co.gz    \
-		../mismatches/Gala_24_15624_TGCAGT.co.gz    \
-		../mismatches/Gala_24c_15622_AGCTTG.co.gz   \
-		../mismatches/Gala_24c_15622_GCCAAG.co.gz   \
-		../mismatches/Gala_24c_15622_TGACCA.co.gz   \
-		../mismatches/Gala_24c_15622_TTAGGC.co.gz   \
-		../mismatches/Gala_48_15625_CTTGTA.co.gz    \
-		../mismatches/Gala_48_15625_GCTGAA.co.gz    \
-		../mismatches/Gala_48_15625_GGCTAC.co.gz    \
-		../mismatches/Gala_48_15625_TAGCTT.co.gz    \
-		../mismatches/Gala_48c_15623_ACAGTG.co.gz   \
-		../mismatches/Gala_48c_15623_ACTTGA.co.gz   \
-		../mismatches/Gala_48c_15623_ATGTCT.co.gz   \
-		../mismatches/Gala_48c_15623_GATCAG.co.gz   \
 		../mismatches/GTLa_24_15479_CGATGT.co.gz    \
 		../mismatches/GTLa_24_15479_GTTCAC.co.gz    \
 		../mismatches/GTLa_24_15479_TCTTAG.co.gz    \
@@ -116,4 +100,16 @@ all:
 		../mismatches/LA_c_13507_CTGGAT.co.gz       \
 		../mismatches/LA_c_13507_GCTGAA.co.gz       \
 		../mismatches/LA_c_13507_TAGGAC.co.gz       \
-		../mismatches/LA_c_13507_TCTACA.co.gz
+		../mismatches/LA_c_13507_TCTACA.co.gz       \
+		../mismatches/GAn_la_24_20465_AGCTTG.co.gz  \
+		../mismatches/GAn_la_24_20465_CGATGT.co.gz  \
+		../mismatches/GAn_la_24_20465_TCTTAG.co.gz  \
+		../mismatches/GAn_la_24_20465_TGCAGT.co.gz  \
+		../mismatches/GAn_la_48_20466_ATGTCT.co.gz  \
+		../mismatches/GAn_la_48_20466_GCCAAG.co.gz  \
+		../mismatches/GAn_la_48_20466_GTTCAC.co.gz  \
+		../mismatches/GAn_la_48_20466_TTAGGC.co.gz  \
+		../mismatches/GAn_la_c_20464_CTGGAT.co.gz   \
+		../mismatches/GAn_la_c_20464_GCTGAA.co.gz   \
+		../mismatches/GAn_la_c_20464_TAGGAC.co.gz   \
+		../mismatches/GAn_la_c_20464_TCTACA.co.gz

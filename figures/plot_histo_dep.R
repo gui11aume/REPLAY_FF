@@ -7,11 +7,11 @@ dattestGChi = subset(dat, V6 == "test" & V9 >= .43)
 dattestGClo = subset(dat, V6 == "test" & V9 < .43)
 
 # Mean-aggregate scores per barcode.
-testGChi = aggregate(dattestGChi$V2 == "AT", FUN=mean,
+testGChi = aggregate(dattestGChi$V2, FUN=mean,
    by=list(brcd=dattestGChi$V1, MM=dattestGChi$V3,
            rep=dattestGChi$V7, GC=dattestGChi$V9))
 
-testGClo = aggregate(dattestGClo$V2 == "AT", FUN=mean,
+testGClo = aggregate(dattestGClo$V2, FUN=mean,
    by=list(brcd=dattestGClo$V1, MM=dattestGClo$V3,
            rep=dattestGClo$V7, GC=dattestGClo$V9))
 
@@ -29,6 +29,7 @@ testsdGClo = aggregate(testGClo$x, FUN=sem,
 testagg = rbind(testaggGClo, testaggGChi)
 testagg$rep = as.factor(testagg$rep)
 
+print(testagg)
 
 limits = aes(
    ymax = c(testaggGClo$x + 1.96*testsdGClo$x,

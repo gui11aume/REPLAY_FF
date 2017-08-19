@@ -3,9 +3,10 @@ dat = read.table("moar_results.txt")
 # Aggregate the data.
 
 dattest = subset(dat, V6 == "test")
+head(dattest)
 
 # Mean-aggregate scores per barcode.
-test = aggregate(dattest$V2 == "AT", FUN=mean,
+test = aggregate(dattest$V2, FUN=mean,
    by=list(brcd=dattest$V1, MM=dattest$V3,
            rep=as.factor(dattest$V7), GC=dattest$V9))
 
@@ -16,6 +17,7 @@ testsd = aggregate(test$x, FUN=function(x)
                    sd(x,na.rm=TRUE)/sqrt(length(x)),
          by=list(MM=test$MM, rep=test$rep))
 
+print(testagg)
 
 limits = aes(
    ymax = testagg$x + 1.96*testsd$x,

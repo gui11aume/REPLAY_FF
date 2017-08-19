@@ -89,7 +89,8 @@ RCircos.Chromosome.Ideogram.Plot = function () {
         pos.y <- c(RCircos.Pos[start:end, 2] * outer.location, 
             RCircos.Pos[end:start, 2] * inner.location)
 #        polygon(pos.x, pos.y)
-        polygon(pos.x, pos.y, col="#EEC90060")
+        #polygon(pos.x, pos.y, col="#EEC90060")
+        polygon(pos.x, pos.y, col="grey80")
         chr.name <- sub(pattern = "chr", replacement = "", chroms[a.chr])
         text(RCircos.Pos[mid, 1] * RCircos.Par$chr.name.pos, 
             RCircos.Pos[mid, 2] * RCircos.Par$chr.name.pos, label = chr.name)

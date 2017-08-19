@@ -29,11 +29,11 @@ dattest_late = subset(dat, V6 == "test" & replicates_late)
 dattest_early = subset(dat, V6 == "test" & !replicates_late)
 
 # Mean-aggregate scores per barcode.
-test_late = aggregate(dattest_late$V2 == "AT", FUN=mean,
+test_late = aggregate(dattest_late$V2, FUN=mean,
    by=list(brcd=dattest_late$V1, MM=dattest_late$V3,
            rep=dattest_late$V7, GC=dattest_late$V9))
 
-test_early = aggregate(dattest_early$V2 == "AT", FUN=mean,
+test_early = aggregate(dattest_early$V2, FUN=mean,
    by=list(brcd=dattest_early$V1, MM=dattest_early$V3,
            rep=dattest_early$V7, GC=dattest_early$V9))
 
@@ -51,6 +51,7 @@ testsd_early = aggregate(test_early$x, FUN=sem,
 testagg = rbind(testagg_early, testagg_late)
 testagg$rep = as.factor(testagg$rep)
 
+print(testagg)
 
 limits = aes(
    ymax = c(testagg_early$x + 1.96*testsd_early$x,

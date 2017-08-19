@@ -5,15 +5,23 @@ library(RCircos)
 source("improvedRCircos.R")
 
 setwd("../mapping")
-CA = subset(read.table("CA.ins"), V2 != "pT2")
-CT = subset(read.table("CT.ins"), V2 != "pT2")
-GA = subset(read.table("GA.ins"), V2 != "pT2")
-GT = subset(read.table("GT.ins"), V2 != "pT2")
+CA1 = subset(read.table("../mapping/CA1.ins"), V2 != "pT2")
+CA2 = subset(read.table("../mapping/CA2.ins"), V2 != "pT2")
+CT1 = subset(read.table("../mapping/CT1.ins"), V2 != "pT2")
+CT2 = subset(read.table("../mapping/CT2.ins"), V2 != "pT2")
+GA1 = subset(read.table("../mapping/GA1.ins"), V2 != "pT2")
+GA2 = subset(read.table("../mapping/GA2.ins"), V2 != "pT2")
+#GT1 = subset(read.table("GT1.ins"), V2 != "pT2")
+#GT2 = subset(read.table("GT2.ins"), V2 != "pT2")
+
+CA = rbind(CA1, CA2)
+CT = rbind(CT1, CT2)
+GA = rbind(GA1, GA2)
 
 gCA = GRanges(Rle(CA$V2), IRanges(start=CA$V4, width=1))
 gCT = GRanges(Rle(CT$V2), IRanges(start=CT$V4, width=1))
 gGA = GRanges(Rle(GA$V2), IRanges(start=GA$V4, width=1))
-gGT = GRanges(Rle(GT$V2), IRanges(start=GT$V4, width=1))
+#gGT = GRanges(Rle(GT$V2), IRanges(start=GT$V4, width=1))
 
 data(UCSC.Mouse.GRCm38.CytoBandIdeogram)
 chr.exclude = NULL
@@ -31,12 +39,12 @@ gGRCm38 = makeGRangesFromDataFrame(UCSC.Mouse.GRCm38.CytoBandIdeogram,
 CA = subset(CA, countOverlaps(gCA, gGRCm38) > 0)
 CT = subset(CT, countOverlaps(gCT, gGRCm38) > 0)
 GA = subset(GA, countOverlaps(gGA, gGRCm38) > 0)
-GT = subset(GT, countOverlaps(gGT, gGRCm38) > 0)
+#GT = subset(GT, countOverlaps(gGT, gGRCm38) > 0)
 
 trackCA = CA[,c(2,4,4)]
 trackCT = CT[,c(2,4,4)]
 trackGA = GA[,c(2,4,4)]
-trackGT = GT[,c(2,4,4)]
+#trackGT = GT[,c(2,4,4)]
 
 rcircos.params = RCircos.Get.Plot.Parameters()
 rcircos.params$track.height = 0.08
@@ -61,5 +69,5 @@ RCircos.Chromosome.Ideogram.Plot()
 Tile.Plot(trackCA, 1, "in", col=COL[1])
 Tile.Plot(trackCT, 2, "in", col=COL[2])
 Tile.Plot(trackGA, 3, "in", col=COL[3])
-Tile.Plot(trackGT, 4, "in", col=COL[4])
+#Tile.Plot(trackGT, 4, "in", col=COL[4])
 dev.off()
