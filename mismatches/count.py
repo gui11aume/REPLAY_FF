@@ -9,11 +9,54 @@ from collections import defaultdict
 
 MIN_BCD_LEN = 5
 
-class NoCanonicalBarcodeException(Exception):
+class NonCanonicalBarcodeException(Exception):
    pass
 
 class WrongScarcodeException(Exception):
    pass
+
+
+SCARCODES = {
+   'CT': 'CGCTAATTAATG',
+   'CA': 'GCTAGCAGTCAG',
+   'GA': 'GCTAGCTCGTTG',
+   'GT': 'GCTAGCTCCGCA',
+}
+
+
+class ScarcodeRemover():
+   '''Utility to remove and check scarcodes.
+   Note that if the first two nucleotides of the scarcode
+   are mutated, they will be added to the barcode.
+   
+   For instance, if the tag has the following structure
+
+            agatgctgagctaggcc tcCTAATTAATG
+                barcode         scaacode
+
+   the recovered barcode will be
+
+            agatgctgagctaggcctc
+   '''
+
+   def __init__(self, MM):
+      # Assign a fixed matcher upon instantiation.
+      self.matcher = {
+         'CT': seeq.compile(SCARCODES['CT'], 2),
+         'CA': seeq.compile(SCARCODES['CA'], 2),
+         'GA': seeq.compile(SCARCODES['GA'], 2),
+         'GT': seeq.compile(SCARCODES['GT'], 2),
+      }[MM]
+
+   def remove(self, bcd_scar):
+      # Get the barcode proper by removing the scarcode
+      bcd = self.matcher.matchPrefix(bcd_scar, False)
+      if bcd is None:
+         # In case the scarcode was not
+         # found raise an exception
+         raise WrongScarcodeException
+      return bcd
+
 
 
 class EventCounter:
@@ -39,30 +82,13 @@ class EventCounter:
          'CT': (('T', 'G'), ('T', 'A'), ('C', 'G')),
       }
 
-      scarcode = {
-         'CT': seeq.compile('CGCTAATTAATG', 2),
-         'CA': seeq.compile('GCTAGCAGTCAG', 2),
-         'GA': seeq.compile('GCTAGCTCGTTG', 2),
-         'GT': seeq.compile('GCTAGCTCCGCA', 2),
-      }
-
       # Use the starcode file of the normalizer in order
       # to retrieve a representative fraction of the
       # scarcode and to infer the mismatch code.
       self.info.get_MMcode(normalizer)
 
       self.MM = assign[self.info.MMcode]
-      self.scarcode = scarcode[self.info.MMcode]
-
-
-   def remove_scarcode(self, bcd):
-      # Get the barcode proper by removing the scarcode
-      bcd = self.scarcode.matchPrefix(bcd, False)
-      if bcd is None:
-         # In case the scarcode was not
-         # found raise an exception
-         raise WrongScarcodeException
-      return bcd
+      self.scar = ScarcodeRemover(self.info.MMcode)
 
 
 
@@ -77,10 +103,10 @@ class EventCounter:
          # Assume that preprocessed file is tab-separated.
          tag, V1, V2 = line.split()
          try:
-            bcd, umi = self.normalize_tag(tag)
-            bcd = self.remove_scarcode(bcd)
+            bcd_scar, umi = self.normalize_tag(tag)
+            bcd = self.scar.remove(bcd_scar)
             reverse_lookup[umi][bcd] += 1
-         except NoCanonicalBarcodeException:
+         except NonCanonicalBarcodeException:
             continue
          except WrongScarcodeException:
             self.info.wrong_scarcode += 1
@@ -93,6 +119,7 @@ class EventCounter:
       # Header of the file.
       outf.write('barcode\tFF\tAT\tGC\n')
 
+      # Run through the barcodes one at a time.
       for bcd,dict_of_umis in self.events.items():
          counter = defaultdict(int)
          for umi,dict_of_variants in dict_of_umis.items():
@@ -105,7 +132,7 @@ class EventCounter:
             if len(S) > 1:
                self.info.non_unique_UMI += sum(dict_of_variants.values())
                continue
-            variant = self.info.normalize_variant(dict_of_variants)
+            variant = self.info.normalize_variant(bcd, umi, dict_of_variants)
             counter[variant] += 1
          # If all UMIs were lost, the counter
          # is empty and there is nothing to show.
@@ -142,7 +169,7 @@ class TagNormalizer:
    def normalize(self, tag):
       '''Replace the tag by its canonical sequence (where errors
       are reverted). Sperate the barcode from the UMI and returns
-      both as a pair. In case of failure, a 'NoCanonicalBarcodeException' 
+      both as a pair. In case of failure, a 'NonCanonicalBarcodeException' 
       is raised.'''
 
       try:
@@ -150,7 +177,7 @@ class TagNormalizer:
       except (KeyError, ValueError):
          # In case the spacer is not present or the tag
          # is not indexed, report aberrant tag.
-         raise NoCanonicalBarcodeException
+         raise NonCanonicalBarcodeException
 
       return barcode, umi
 
@@ -161,10 +188,10 @@ class CountingInfo:
 
    # MMcodes and their scarcodes.
    MM = {
-      'CGCTAATTAATG': 'CT',
-      'GCTAGCAGTCAG': 'CA',
-      'GCTAGCTCGTTG': 'GA',
-      'GCTAGCTCCGCA': 'GT',
+      SCARCODES['CT']: 'CT',
+      SCARCODES['CA']: 'CA',
+      SCARCODES['GA']: 'GA',
+      SCARCODES['GT']: 'GT',
    }
 
 
@@ -172,10 +199,12 @@ class CountingInfo:
       self.fname1 = fname1
       self.fname2 = fname2
 
+      self.MMcode = None
+
       self.nreads = 0
       self.used_reads = 0
 
-      self.vart_conflicts = []
+      self.vart_conflicts = dict()
       self.wrong_scarcode = 0
       self.barcode_too_short = 0
       self.too_few_reads = 0
@@ -183,7 +212,7 @@ class CountingInfo:
       self.minority_report = 0
 
 
-   def normalize_variant(self, dict_of_variants):
+   def normalize_variant(self, bcd, umi, dict_of_variants):
       '''In several cases the barcode/UMI pair is associated with
       multiple variants. Read errors and template switching during the
       PCR can cause this. In any event, a barcode/UMI pair corresponds
@@ -196,17 +225,16 @@ class CountingInfo:
       # If variants are not unanimous for the barcode/UMI pair,
       # create an exception entry for the records.
       if len(dict_of_variants) > 1:
-         entry = [dict_of_variants[a] for a in self.MM ]
-         self.vart_conflicts.append(entry)
+         self.vart_conflicts[(bcd,umi)] = dict_of_variants.copy()
          total = sum(dict_of_variants.values())
          kept = dict_of_variants[variant]
          self.minority_report += (total - kept)
          self.used_reads += kept
 
-
       return variant
 
 
+   # Side effect: updates 'self.MMcode'
    def get_MMcode(self, tags):
       '''The barcodes have a scar (the scarcode) that identifies the
       kind of mismatch that is generated during the DNA repair. This
@@ -215,10 +243,10 @@ class CountingInfo:
 
       # Scarcodes and the corresponding mismatches.
       refscars = {
-         'CGCTAATTAATG': 0,
-         'GCTAGCAGTCAG': 0,
-         'GCTAGCTCGTTG': 0,
-         'GCTAGCTCCGCA': 0,
+         SCARCODES['CT']: 0,
+         SCARCODES['CA']: 0,
+         SCARCODES['GA']: 0,
+         SCARCODES['GT']: 0,
       }
 
       for tag in tags:
@@ -237,6 +265,7 @@ class CountingInfo:
 
       winner = max(refscars, key=refscars.get)
 
+      # Modify the object in place.
       self.MMcode = self.MM[winner]
 
       return self.MMcode

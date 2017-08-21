@@ -9,70 +9,106 @@ from textwrap import dedent
 import count
 
 
+class TestScarcodeRemover(unittest.TestCase):
+
+   def test_init_fail(self):
+      with self.assertRaises(KeyError):
+         count.ScarcodeRemover('AA')
+
+   def test_remove(self):
+
+      # List of scarcodes:
+      # CT: CGCTAATTAATG
+      # CA: GCTAGCAGTCAG
+      # GA: GCTAGCTCGTTG
+      # GT: GCTAGCTCCGCA
+
+      scar = count.ScarcodeRemover('CT')
+      self.assertEqual(scar.remove('aaaCGCTAATTAATG'), 'aaa')
+      self.assertEqual(scar.remove('aaaCGCTAtTTAATG'), 'aaa')
+      self.assertEqual(scar.remove('aaagGCTAtTTAATG'), 'aaag')
+      self.assertEqual(scar.remove('aaaCaCTAtTTAATG'), 'aaa')
+
+      scar = count.ScarcodeRemover('CA')
+      self.assertEqual(scar.remove('aaaGCTAGCAGTCAG'), 'aaa')
+      self.assertEqual(scar.remove('aaaGCTAGCAaTCAG'), 'aaa')
+      self.assertEqual(scar.remove('aaatCTAGCAGTCAG'), 'aaat')
+      self.assertEqual(scar.remove('aaaGtTAGCAGTCAG'), 'aaa')
+
+      scar = count.ScarcodeRemover('GA')
+      self.assertEqual(scar.remove('aaaGCTAGCTCGTTG'), 'aaa')
+      self.assertEqual(scar.remove('aaaGCTAGCTCaTTG'), 'aaa')
+      self.assertEqual(scar.remove('aaaaCTAGCTCGTTG'), 'aaaa')
+
+      scar = count.ScarcodeRemover('GT')
+      self.assertEqual(scar.remove('aaaGCTAGCTgCGCA'), 'aaa')
+      self.assertEqual(scar.remove('aaaGCTAGCTCCGCA'), 'aaa')
+      self.assertEqual(scar.remove('aaatCTAGCTCCGCA'), 'aaat')
+      self.assertEqual(scar.remove('aaaGaTAGCTCCGCA'), 'aaa')
+
+
+   def test_remove_fail(self):
+      # Test if the remove raises an exception if the scarcode
+      # is not found.
+
+      scar = count.ScarcodeRemover('CT')
+      with self.assertRaises(count.WrongScarcodeException):
+         scar.remove('aaaAAAAAAAAAAAA')
+      with self.assertRaises(count.WrongScarcodeException):
+         scar.remove('aaaCGCaAgTTtATG')
+      with self.assertRaises(count.WrongScarcodeException):
+         scar.remove('aaaTAATTAATG')
+      with self.assertRaises(count.WrongScarcodeException):
+         scar.remove('aaatatTAATTAATG')
+      with self.assertRaises(count.WrongScarcodeException):
+         scar.remove('aaaGCTAGCAGTCAG')
+
+
+
 class TestTagNormalizer(unittest.TestCase):
 
-   def test_init(self):
-
+   def setUp(self):
       # Mini starcode file.
       f = StringIO(
          'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
          'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
       )
 
+      self.normalizer = count.TagNormalizer(f)
+
+   def test_init(self):
       # Make sure that the internal dictionary has been
       # updated upon construction.
-      normalizer = count.TagNormalizer(f)
-      self.assertNotEqual(normalizer.canonical, dict())
+      self.assertNotEqual(self.normalizer.canonical, dict())
 
       # Make sure that an exception is raised when the input
       # file is not properly formatted.
       f = StringIO('AGATGCTACGCG')
 
       with self.assertRaises(ValueError):
-         normalizer = count.TagNormalizer(f)
+         self.normalizer = count.TagNormalizer(f)
 
 
    def test_normalize(self):
-
-      # Mini starcode file.
-      f = StringIO(
-         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
-         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
-      )
-
-      normalizer = count.TagNormalizer(f)
-
       # Make sure that the normalizer can normalize tags.
-      bcd,umi = normalizer.normalize('ACATGCTACGGC')
+      bcd,umi = self.normalizer.normalize('ACATGCTACGGC')
       self.assertEqual((bcd,umi), ('AG', 'CG'))
 
-      bcd,umi = normalizer.normalize('ACATGCTACGCC')
+      bcd,umi = self.normalizer.normalize('ACATGCTACGCC')
       self.assertEqual((bcd,umi), ('AG', 'CG'))
 
-      bcd,umi = normalizer.normalize('CCATGCTACGAC')
+      bcd,umi = self.normalizer.normalize('CCATGCTACGAC')
       self.assertEqual((bcd,umi), ('CC', 'AA'))
 
-      bcd,umi = normalizer.normalize('CCATGCTACGCA')
+      bcd,umi = self.normalizer.normalize('CCATGCTACGCA')
       self.assertEqual((bcd,umi), ('CC', 'AA'))
 
-      # Make sure that the normalizer raises the proper exception
-      # when the tags are not recognized.
-      with self.assertRaises(count.AberrantTagException):
-         normalizer.normalize('GGATGCTACGGG')
 
    def test_iter(self):
 
-      # Mini starcode file.
-      f = StringIO(
-         'AGATGCTACGCG\t3\tACATGCTACGGC,ACATGCTACGCC\n' \
-         'CCATGCTACGAA\t9\tCCATGCTACGAC,CCATGCTACGCA'
-      )
-
-      normalizer = count.TagNormalizer(f)
-
       # Make sure that the normalizer can be called directly
       # in a for statement, and use list comprehension for the test.
-      tags = sorted([tag for tag in normalizer])
+      tags = sorted([tag for tag in self.normalizer])
       self.assertEqual(tags, ['AGATGCTACGCG', 'CCATGCTACGAA'])
 
 
@@ -80,15 +116,24 @@ class TestTagNormalizer(unittest.TestCase):
 class TestCountingInfo(unittest.TestCase):
 
    def test_init(self):
-      info = count.CountingInfo('fname1', 'fname2')
-      self.assertEqual(info.fname1, 'fname1')
-      self.assertEqual(info.fname2, 'fname2')
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
+      self.assertEqual(info.fname1, 'dummy_fname1')
+      self.assertEqual(info.fname2, 'dummy_fname2')
+      self.assertIsNone(info.MMcode)
+      self.assertEqual(info.nreads, 0)
+      self.assertEqual(info.used_reads, 0)
+      self.assertEqual(info.vart_conflicts, {})
+      self.assertEqual(info.wrong_scarcode, 0)
+      self.assertEqual(info.barcode_too_short, 0)
+      self.assertEqual(info.too_few_reads, 0)
+      self.assertEqual(info.non_unique_UMI, 0)
+      self.assertEqual(info.minority_report, 0)
 
 
    def test_get_MMcode(self):
 
       # Need a CountingInfo instance.
-      info = count.CountingInfo('fname1', 'fname2')
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
 
       # Test case 1 (GA).
       tags = set([
@@ -127,25 +172,41 @@ class TestCountingInfo(unittest.TestCase):
       self.assertEqual(mm, 'GT')
 
 
+   def test_normalize_variant(self):
+      # Instantiate info.
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
+
+      dict_of_variants = { ('A','T'): 14, ('G','C'): 1, }
+      norm = info.normalize_variant('ACTGGACGC', 'AAA', dict_of_variants)
+
+      self.assertEqual(norm, ('A','T'))
+      self.assertEqual(info.minority_report, 1)
+      self.assertEqual(info.used_reads, 14)
+      self.assertEqual(info.vart_conflicts,
+         {('ACTGGACGC', 'AAA'): {('G', 'C'): 1, ('A', 'T'): 14}})
+
+
    def test_write_to_file(self):
-      info = count.CountingInfo('fname1', 'fname2')
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
       info.MMcode = 'GA'
       info.nreads = 100
-      info.aberrant_tags = 2
+      info.used_reads = 80
+      info.wrong_scarcode = 2
+      info.barcode_too_short = 1
       info.too_few_reads = 3
       info.non_unique_UMI = 2
       info.minority_report = 1
-      info.prop_rightMM = 0.9
 
       buffer = StringIO()
       info.write_to_file(buffer)
 
-      txt = '''fname1
-         fname2
+      txt = '''dummy_fname1
+         dummy_fname2
          MM type: GA
-         Right scarcodes: 90.00%
+         Used reads:\t80 (80.00%)
          Reads lost to:
-           Aberrant tags:\t2 (2.00%)
+           Wrong scarcode:\t2 (2.00%)
+           Barcode too short:\t1 (1.00%)
            Too few reads:\t3 (3.00%)
            Non unique UMI:\t2 (2.00%)
            Minority report:\t1 (1.00%)
@@ -167,7 +228,7 @@ class TestEventCounter(unittest.TestCase):
       )
 
       normalizer = count.TagNormalizer(f)
-      info = count.CountingInfo('fname1', 'fname2')
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
       counter = count.EventCounter(normalizer, info)
 
       self.assertEqual(counter.info.MMcode, 'GA') 
@@ -209,73 +270,68 @@ class TestEventCounter(unittest.TestCase):
       self.assertEqual(counter.info.MMcode, 'GT') 
 
 
-   def test_clip_barcode(self):
-
-      # Mini starcode file (GA).
-      f = StringIO(
-         'GATGCTAGCTCGTTGATGCTACGTAC\t1\tGATGCTAGCTCGTTGATGCTACGTAC\n' \
-         'GATGCTAGCTCGTTGATGCTACGAAA\t1\tGATGCTAGCTCGTTGATGCTACGAAA'
-      )
-
-      normalizer = count.TagNormalizer(f)
-      info = count.CountingInfo('fname1', 'fname2')
-      counter = count.EventCounter(normalizer, info)
-
-      bcd = counter.clip_barcode('GATGCTAGCTCGTTG')
-      self.assertEqual(bcd, 'GAT')
-
-      bcd = counter.clip_barcode('GATGCTAGCTCgTTG')
-      self.assertEqual(bcd, 'GAT')
-
-      bcd = counter.clip_barcode('GATGCTAGCTCTTG')
-      self.assertEqual(bcd, 'GAT')
-
-      with self.assertRaises(count.AberrantTagException):
-         counter.clip_barcode('AAAAAAAAAAAAA')
-
-
    def test_count(self):
       
       # Mini starcode file (GA).
       f = StringIO(
-         'GATGCTAGCTCGTTGATGCTACGTAC\t1\tGATGCTAGCTCGTTGATGCTACGTAC\n' \
-         'GATGCTAGCTCGTTGATGCTACGGGG\t1\tGATGCTAGCTCGTTGATGCTACGGGG\n' \
-         'GATGCTAGCTCGTTGATGCTACGAAA\t1\tGATGCTAGCTCGTTGATGCTACGAAA'
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\t1\tAAGATGCTAGCTCGTTGATGCTACGTAC\n' \
+         'AGGATGCTAGCTCGTTGATGCTACGGGG\t1\tAGGATGCTAGCTCGTTGATGCTACGGGG\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGAAA\t1\tTTGATGCTAGCTCGTTGATGCTACGAAA\n' \
+         'AGGTTTGGTGGTGGAGGATGCTACGTAA\t1\tAGGTTTGGTGGTGGAGGATGCTACGTAA\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\t1\tGATGCTAGCTCGTTGATGCTACGTAC\n'     \
+         'AAGATGCTAGCTCGTTGATGCTACGGGG\t1\tAAGATGCTAGCTCGTTGATGCTACGGGG\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGGGG\t1\tTTGATGCTAGCTCGTTGATGCTACGGGG\n'
       )
 
       normalizer = count.TagNormalizer(f)
-      info = count.CountingInfo('fname1', 'fname2')
+      info = count.CountingInfo('dummy_fname1', 'dummy_fname2')
       counter = count.EventCounter(normalizer, info)
 
-      # Mini pps file.
+      # Mini pps file (GA).
+      # barcode GCTAGCTCGTTG ATGCTACG UMI...
       f = StringIO(
-         # Read 1 is aberrant (wrong scarcode).
+         # Read 1 has a wrong scarcode.
          # Read 2-3 are identical and normal.
          # Read 4 is in conflict with reads 2-3.
          # Read 5-6 are identical and normal.
-         # Read 7 is normal but discarded (unique read).
-         'ATGCTACGATGCTACGATGCTACGaa\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tT\n' \
-         'GATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n'
+         # Read 7 is normal but discarded (too_few_reads).
+         # Read 8 is not registered in the starcode file.
+         # Read 9 has a too short barcode.
+         # Reads 10 to 13 create a UMI conflict.
+         'AGGTTTGGTGGTGGAGGATGCTACGTAA\tA\tC\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tT\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
+         'AGGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
+         'AACTGAGAGGCGATGAGCGAGTAATAGC\tA\tC\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n'   \
+         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n'
       )
 
       out = StringIO()
       counter.count(f, out)
 
-      self.assertEqual(out.getvalue(),
-         'barcode\tFF\tAT\tGC\nGAT\t2\t0\t0\n')
+      #self.assertEqual(out.getvalue(),
+      #   'barcode\tFF\tAT\tGC\nGAT\t2\t0\t0\n')
 
       # Test info gathering.
       self.assertEqual(info.MMcode, 'GA')
-      self.assertEqual(info.aberrant_tags, 1)
+      self.assertEqual(info.nreads, 13)
+      self.assertEqual(info.wrong_scarcode, 1)
+      self.assertEqual(info.barcode_too_short, 1)
       self.assertEqual(info.too_few_reads, 1)
+      self.assertEqual(info.non_unique_UMI, 4)
       self.assertEqual(info.minority_report, 1)
       self.assertEqual(len(info.vart_conflicts), 1)
 
 
 if __name__ == '__main__':
-   unittest.main()
+   #suite = unittest.TestSuite()
+   #suite.addTest(TestCountingInfo('test_write_to_file'))
+   #unittest.TextTestRunner(verbosity=2).run(suite)
+   unittest.main(verbosity=2)

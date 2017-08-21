@@ -1,4 +1,8 @@
 compare = function(df1, df2) {
+   # Compare two .co.gz files. The similarity score is the weighted
+   # covariance among AT / (AT + GC), with weight AT + GC. The barcodes
+   # are merged between experiments and these scores are computed. The
+   # barcodes present in only one experiment are given weight 0.
 
    if (nrow(df1) < 10 || nrow(df2) < 10) {
       return (0)
@@ -24,16 +28,21 @@ compare = function(df1, df2) {
 
 }
 
+sink("clusterize_report.txt")
 fnames = commandArgs(trailingOnly = TRUE)
 
 if (!file.exists("sim.rda")) {
 
    # Compute the similarity matrix.
    barcodes = list(
-      CA = read.table("../mapping/CA.ins", as.is=TRUE)$V1,
-      CT = read.table("../mapping/CT.ins", as.is=TRUE)$V1,
-      GA = read.table("../mapping/GA.ins", as.is=TRUE)$V1,
-      GT = read.table("../mapping/GT.ins", as.is=TRUE)$V1
+      CA = c(read.table("../mapping/CA1.ins", as.is=TRUE)$V1,
+             read.table("../mapping/CA2.ins", as.is=TRUE)$V1),
+      CT = c(read.table("../mapping/CT1.ins", as.is=TRUE)$V1,
+             read.table("../mapping/CT2.ins", as.is=TRUE)$V1),
+      GA = c(read.table("../mapping/GA1.ins", as.is=TRUE)$V1,
+             read.table("../mapping/GA2.ins", as.is=TRUE)$V1),
+      GT = c(read.table("../mapping/GT1.ins", as.is=TRUE)$V1,
+             read.table("../mapping/GT2.ins", as.is=TRUE)$V1)
    )
    # Add other mismatch codes.
    barcodes[['24']] = barcodes[['48']] =
@@ -47,11 +56,16 @@ if (!file.exists("sim.rda")) {
       mmcode = toupper(substr(enames[i], 1,2))
       files[[i]] = subset(read.delim(fnames[i], as.is=TRUE),
                        barcode %in% barcodes[[mmcode]])
+      # Check the overlap between the barcodes in the .co.gz files
+      # and those in the .ins file. If it is too low, the sample does
+      # not have the riht identity.
       if (nrow(files[[i]]) < 10) {
          cat(paste("sample swap:", enames[i], "\n"))
       }
    }
 
+   # Create similarity matrix between .co.gz files.
+   # The similarity score is the output of the 'compare()' function.
    sim = matrix(0, nrow=length(fnames), ncol=length(fnames))
    for (i in 1:(length(fnames)-1)) {
    for (j in (i+1):length(fnames)) {
@@ -73,3 +87,4 @@ plot(h, xlab="Correlation between experiments")
 #pdf("heatmap.pdf", useDingbats=FALSE)
 #image(sim[h$order,h$order][1:35,1:35], col=colorRampPalette(c("white", "black"))(256))
 dev.off()
+sink()
