@@ -290,43 +290,48 @@ class TestEventCounter(unittest.TestCase):
       # Mini pps file (GA).
       # barcode GCTAGCTCGTTG ATGCTACG UMI...
       f = StringIO(
-         # Read 1 has a wrong scarcode.
-         # Read 2-3 are identical and normal.
-         # Read 4 is in conflict with reads 2-3.
-         # Read 5-6 are identical and normal.
-         # Read 7 is normal but discarded (too_few_reads).
-         # Read 8 is not registered in the starcode file.
-         # Read 9 has a too short barcode.
-         # Reads 10 to 13 create a UMI conflict.
-         'AGGTTTGGTGGTGGAGGATGCTACGTAA\tA\tC\n' \
-         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
-         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n' \
-         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tT\n' \
-         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
-         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\n' \
-         'AGGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
-         'AACTGAGAGGCGATGAGCGAGTAATAGC\tA\tC\n' \
-         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\n'   \
-         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
-         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
-         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n' \
-         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\n'
+         # Read  1 has a wrong scarcode.
+         # Reads 2-4 are identical and normal.
+         # Reads 5-6 is in conflict with reads 2-4.
+         # Reads 7-8 are identical and normal.
+         # Read  9 is normal but discarded (too_few_reads).
+         # Read  10 is not registered in the starcode file.
+         # Read  11 has a too short barcode.
+         # Reads 12-15 create a UMI conflict.
+         'AGGTTTGGTGGTGGAGGATGCTACGTAA\tA\tC\tGAG\tATA\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\tGAG\tGTA\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\tGAG\tAAA\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tC\tGAG\tATG\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tT\tGAG\tATA\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGTAC\tA\tT\tGAG\tATA\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\tGAG\tATA\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGAAA\tA\tC\tGAG\tATA\n' \
+         'AGGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\tGAG\tATA\n' \
+         'AACTGAGAGGCGATGAGCGAGTAATAGC\tA\tC\tGAG\tATA\n' \
+         'GATGCTAGCTCGTTGATGCTACGTAC\tA\tC\tGAG\tATA\n'   \
+         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\tGAG\tATA\n' \
+         'AAGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\tGAG\tATA\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\tGAG\tATA\n' \
+         'TTGATGCTAGCTCGTTGATGCTACGGGG\tA\tC\tGAG\tATA\n'
       )
 
       out = StringIO()
       counter.count(f, out)
 
-      #self.assertEqual(out.getvalue(),
-      #   'barcode\tFF\tAT\tGC\nGAT\t2\t0\t0\n')
+      self.assertEqual(out.getvalue(),
+         'barcode\tFF\tAT\tGC\n'
+         'TTGAT\t1\t0\t0\n'
+         'AAGAT\t1\t0\t0\n'
+      )
 
       # Test info gathering.
       self.assertEqual(info.MMcode, 'GA')
-      self.assertEqual(info.nreads, 13)
+      self.assertEqual(info.nreads, 15)
       self.assertEqual(info.wrong_scarcode, 1)
       self.assertEqual(info.barcode_too_short, 1)
       self.assertEqual(info.too_few_reads, 1)
       self.assertEqual(info.non_unique_UMI, 4)
-      self.assertEqual(info.minority_report, 1)
+      self.assertEqual(info.minority_report, 2)
       self.assertEqual(len(info.vart_conflicts), 1)
 
 

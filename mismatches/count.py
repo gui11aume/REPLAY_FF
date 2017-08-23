@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import datetime
+import random
 import seeq
 import sys
 
@@ -15,6 +16,20 @@ class NonCanonicalBarcodeException(Exception):
 class WrongScarcodeException(Exception):
    pass
 
+class TieException(Exception):
+   pass
+
+
+#  ------      IMPORTANT NOTE      ------
+
+# The scarcodes mark the "linear" names of the mismatches, i.e.
+# the nucleotides as they appear in the product of gene synthesis.
+# The mismatches as they happen during the repair process are
+# as follows:
+#    CT    G:T
+#    CA    G:A
+#    GA    C:A
+#    GT    C:T
 
 SCARCODES = {
    'CT': 'CGCTAATTAATG',
@@ -68,6 +83,8 @@ class EventCounter:
       # barcode: umi: variant: count.
       self.events = defaultdict(lambda:
             defaultdict(lambda: defaultdict(int)))
+      self.seq1 = defaultdict(lambda: defaultdict(list))
+      self.seq2 = defaultdict(lambda: defaultdict(list))
 
       self.info = info
 
@@ -91,8 +108,43 @@ class EventCounter:
       self.scar = ScarcodeRemover(self.info.MMcode)
 
 
+   def consensus(self, seqlist):
+      '''Find the consensus sequence among a list of sequences.'''
 
-   def count(self, f, outf=sys.stdout):
+      # Remove the sequences with a different size.
+      L = max([len(seq) for seq in seqlist])
+      seqlist = [seq for seq in seqlist if len(seq) == L]
+
+      con = bytearray('N'*L)
+      for i in range(L):
+         counter = defaultdict(int)
+         for seq in seqlist: counter[seq[i]] += 1
+         con[i] = max(counter, key=counter.get)
+
+      return str(con)
+
+
+   def outputseq(self, seqoutf, variant, seq1, n1, seq2, n2):
+      '''Write the consensus sequences to file for given UMI.'''
+
+      decode = {
+         ('A', 'C'): 'FF',
+         ('T', 'C'): 'FF',
+         ('A', 'G'): 'FF',
+         ('T', 'G'): 'FF',
+         ('A', 'T'): 'AT',
+         ('T', 'A'): 'AT',
+         ('G', 'C'): 'GC',
+         ('C', 'G'): 'GC',
+      }
+
+      # Output to file.
+      if variant in decode:
+         seqoutf.write('%s\t%s\t%d\t%s\t%d\n' % \
+               (decode[variant], seq1, n1, seq2, n2))
+
+
+   def count(self, f, outf=sys.stdout, seqoutf=None):
       '''Processing function to convert the reads to repair events.'''
 
       # Create a filter for UMIs used multiple times.
@@ -101,7 +153,7 @@ class EventCounter:
       for line in f:
          self.info.nreads += 1
          # Assume that preprocessed file is tab-separated.
-         tag, V1, V2 = line.split()
+         tag, V1, V2, SEQ1, SEQ2 = line.split()
          try:
             bcd_scar, umi = self.normalize_tag(tag)
             bcd = self.scar.remove(bcd_scar)
@@ -115,6 +167,8 @@ class EventCounter:
             self.info.barcode_too_short += 1
             continue
          self.events[bcd][umi][(V1,V2)] += 1
+         self.seq1[bcd][umi].append(SEQ1)
+         self.seq2[bcd][umi].append(SEQ2)
 
       # Header of the file.
       outf.write('barcode\tFF\tAT\tGC\n')
@@ -123,22 +177,34 @@ class EventCounter:
       for bcd,dict_of_umis in self.events.items():
          counter = defaultdict(int)
          for umi,dict_of_variants in dict_of_umis.items():
-            # Discard all unique read.
-            if sum(dict_of_variants.values()) < 2:
+            # Discard all the events with a single read.
+            for key in [a for a,b in dict_of_variants.items() if b < 2]:
+               dict_of_variants.pop(key)
                self.info.too_few_reads += 1
+            # If nothing is left just move on.
+            if len(dict_of_variants) < 1:
                continue
-            # Discard UMIs used multiple times.
+            # Discard UMIs used multiple times (with at least two reads).
             S = [1 for (a,b) in reverse_lookup[umi].items() if b > 1]
             if len(S) > 1:
                self.info.non_unique_UMI += sum(dict_of_variants.values())
                continue
-            variant = self.info.normalize_variant(bcd, umi, dict_of_variants)
+            variant = self.info.normalize_variant(bcd,
+                  umi, dict_of_variants)
             counter[variant] += 1
+            if seqoutf:
+               self.outputseq(
+                  seqoutf, variant,
+                  self.consensus(self.seq1[bcd][umi]),
+                  len(self.seq1[bcd][umi]),
+                  self.consensus(self.seq2[bcd][umi]),
+                  len(self.seq2[bcd][umi])
+               )
          # If all UMIs were lost, the counter
          # is empty and there is nothing to show.
          if not counter:
             continue
-         # Show counts (FF, AT, GC).
+         # Show counts and sequences (FF, AT, GC)
          counts = '\t'.join(['%d' % counter[a] for a in self.MM])
          outf.write('%s\t%s\n' % (bcd, counts))
 
@@ -219,17 +285,23 @@ class CountingInfo:
       to a unique molecule and therefore a single repair event that we
       can try to infer.'''
 
+      # Only one variant.
+      if len(dict_of_variants) == 1:
+         return dict_of_variants.keys()[0]
+
       # The most frequent variant is assigned to the tag.
-      variant = max(dict_of_variants, key=dict_of_variants.get)
+      # In case of tie, assign a winner at random.
+      maxval = max(dict_of_variants.values())
+      winners = [a for a,b in dict_of_variants.items() if b == maxval]
+      variant = random.choice(winners)
 
       # If variants are not unanimous for the barcode/UMI pair,
       # create an exception entry for the records.
-      if len(dict_of_variants) > 1:
-         self.vart_conflicts[(bcd,umi)] = dict_of_variants.copy()
-         total = sum(dict_of_variants.values())
-         kept = dict_of_variants[variant]
-         self.minority_report += (total - kept)
-         self.used_reads += kept
+      self.vart_conflicts[(bcd,umi)] = dict_of_variants.copy()
+      total = sum(dict_of_variants.values())
+      kept = dict_of_variants[variant]
+      self.minority_report += (total - kept)
+      self.used_reads += kept
 
       return variant
 
@@ -249,6 +321,8 @@ class CountingInfo:
          SCARCODES['GT']: 0,
       }
 
+      # Note: the class 'TagNormalizer' was made
+      # iterable for this 'for' loop to work.
       for tag in tags:
          try:
             bcd,umi = tag.split('ATGCTACG')
@@ -314,22 +388,22 @@ class CountingInfo:
 
 
 
-def main(fname1, fname2, info):
+def main(fname1, fname2, info, seqoutf=None):
    # Instantiate and run tools for the analysis.
    with open(fname1) as f, open(fname2) as g:
       # Create a normalizer encapsulating the starcode file.
       normalizer = TagNormalizer(g)
       counter = EventCounter(normalizer, info)
-      counter.count(f)
+      counter.count(f, seqoutf=seqoutf)
 
 
 if __name__ == '__main__':
    # Initialize CountingInfo object to monitor the process.
    info = CountingInfo(sys.argv[1], sys.argv[2])
+   seqoutf = open(sys.argv[3], 'w') if len(sys.argv) > 3 else None
    try:
-      main(sys.argv[1], sys.argv[2], info)
-   except Exception as e:
-      sys.stderr.write(str(e))
-      sys.exit(1)
+      random.seed(123)
+      main(sys.argv[1], sys.argv[2], info, seqoutf)
    finally:
       info.write_to_file(open('counting_logs.txt', 'a'))
+      if seqoutf: seqoutf.close()

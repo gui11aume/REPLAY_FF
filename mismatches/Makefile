@@ -146,7 +146,7 @@ all: $(TARGETS)
 	cut -f1 $< | starcode -d2 --print-clusters > $@
 
 %.co.gz: %.pps %.stc
-	python count.py $^ | gzip > $@ && rm $^
+	python count.py $^ $*_seq.txt | gzip > $@ && rm $^ && gzip $*_seq.txt
 
 clean:
 	rm -rf *.pps *.co.gz

@@ -53,7 +53,7 @@ class Extractor:
    seq_after_tag = None
    seq_before_variant = None
 
-   def extract_tag_and_variant(self, txt):
+   def extract_all(self, txt):
       '''Both reads have the same structure, with a tag (either a
       barcode or a UMI) immediately after the Illumina sequencing
       primer, and the variant towards the end of the read.'''
@@ -62,28 +62,30 @@ class Extractor:
       prefix = self.seq_after_tag.matchPrefix(txt, False)
       if not prefix:
          raise AberrantReadException
+      seq = self.seq_after_tag.matchSuffix(txt, True)
 
       # The first character of the suffix is the variant.
       suffix = self.seq_before_variant.matchSuffix(txt, False)
       if not suffix:
          raise AberrantReadException
+      seq = self.seq_before_variant.matchPrefix(seq, True)
 
       # The prefix is the tag, the first character
       # of the suffix is the variant.
-      return (prefix, suffix[0])
+      return (prefix, suffix[0], seq)
 
 
 
 class Read1Extractor(Extractor):
    def __init__(self):
-      self.seq_after_tag = seeq.compile('GAATCATGAACACCCGCAT', 3)
-      self.seq_before_variant = seeq.compile('CGCTACGAGGCCGGCCGC', 3)
+      self.seq_after_tag = seeq.compile('GAATCATGAACACCCGCAT', 4)
+      self.seq_before_variant = seeq.compile('CGCTACGAGGCCGGCCGC', 4)
 
 
 class Read2Extractor(Extractor):
    def __init__(self):
-      self.seq_after_tag  = seeq.compile('TGCAACGAATTCATTAG', 3)
-      self.seq_before_variant = seeq.compile('CACCTTGAAGTCGCCGATCA', 3)
+      self.seq_after_tag  = seeq.compile('TGCAACGAATTCATTAG', 4)
+      self.seq_before_variant = seeq.compile('CACCTTGAAGTCGCCGATCA', 4)
 
 
 def main(f, g, info):
@@ -98,13 +100,13 @@ def main(f, g, info):
       if linenumber % 4 == 2:
          info.ntotal += 1
          try:
-            BCD,SNP1 = Ex1.extract_tag_and_variant(read1.rstrip())
-            UMI,SNP2 = Ex2.extract_tag_and_variant(read2.rstrip())
+            BCD,SNP1,SEQ1 = Ex1.extract_all(read1.rstrip())
+            UMI,SNP2,SEQ2 = Ex2.extract_all(read2.rstrip())
             # Concatenate the barcode and the UMI into a single
             # tag. To mark the distinction, insert ATGCTACG
             # in between.
-            sys.stdout.write('%sATGCTACG%s\t%s\t%s\n' % \
-                  (BCD, UMI, SNP1, SNP2))
+            sys.stdout.write('%sATGCTACG%s\t%s\t%s\t%s\t%s\n' % \
+                  (BCD, UMI, SNP1, SNP2, SEQ1, SEQ2))
          except AberrantReadException:
             # Count aberrant reads. They are all the reads for
             # which either the prefix or the suffix could not

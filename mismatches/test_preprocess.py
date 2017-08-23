@@ -49,58 +49,61 @@ class TestExtractor(unittest.TestCase):
       # Test case 1.
       seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
 
-      BCD,SNP1 = ex.extract_tag_and_variant(seq)
+      BCD,SNP1,SEQ1 = ex.extract_all(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
       self.assertEqual(SNP1, 'g')
+      self.assertEqual(SEQ1, 'GAATCATGAACACCCGCATCGCTACGAGGCCGGCCGC')
 
       # Test case 2.
       seq = 'aaaaaaaaGAATCATGAACACCCGCATttCGCTACGAGGCCGGCCGCgc'
 
-      BCD,SNP1 = ex.extract_tag_and_variant(seq)
+      BCD,SNP1,SEQ1 = ex.extract_all(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
       self.assertEqual(SNP1, 'g')
+      self.assertEqual(SEQ1, 'GAATCATGAACACCCGCATttCGCTACGAGGCCGGCCGC')
 
       # Test case 3.
       seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
 
-      BCD,SNP1 = ex.extract_tag_and_variant(seq)
+      BCD,SNP1,SEQ1 = ex.extract_all(seq)
       self.assertEqual(BCD, 'aaaaaaaa')
       self.assertEqual(SNP1, 'g')
+      self.assertEqual(SEQ1, 'GAAaCATtAACAgCCGCATttCGCTACGAcGCgcGCCGC')
 
       # Test case 4.
       # Structure of a read 2.
       seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 5.
       seq = 'GAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 6.
       seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGC'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 7.
-      # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaGAAaCATtgACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
-      #                      ^
+      # Extra mutations compared to test case 3.
+      seq = 'aaaaaaaaGAAaCATtgACAgCCaCATttCGCTACGAcGCgcGCCGCgc'
+      #                      ^      ^
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 8.
-      # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGaTACGAcGCgcGCCGCgc'
-      #                                     ^
+      # Extra mutations compared to test case 3.
+      seq = 'aaaaaaaaGAAaCATtAAtAgCCGCATttCGCTACGAcGtgcGCtGCgc'
+      #                        ^                    ^    ^
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
 
    def test_Read2Extractor(self):
@@ -109,59 +112,62 @@ class TestExtractor(unittest.TestCase):
       # Test case 1.
       seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
 
-      UMI,SNP2 = ex.extract_tag_and_variant(seq)
+      UMI,SNP2,SEQ2 = ex.extract_all(seq)
       self.assertEqual(UMI, 'aaaaaaaa')
       self.assertEqual(SNP2, 'g')
+      self.assertEqual(SEQ2, 'TGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCA')
 
       # Test case 2.
       seq = 'aaaaaaaaTGCAACGAATTCATTAGttCACCTTGAAGTCGCCGATCAgc'
 
-      UMI,SNP2 = ex.extract_tag_and_variant(seq)
+      UMI,SNP2,SEQ2 = ex.extract_all(seq)
       self.assertEqual(UMI, 'aaaaaaaa')
       self.assertEqual(SNP2, 'g')
+      self.assertEqual(SEQ2, 'TGCAACGAATTCATTAGttCACCTTGAAGTCGCCGATCA')
 
       # Test case 3.
       seq = 'aaaaaaaaTGaAACGtATaCATTAGttCACCTaGAAcaCGCCGATCAgc'
 
-      UMI,SNP2 = ex.extract_tag_and_variant(seq)
+      UMI,SNP2,SEQ2 = ex.extract_all(seq)
       self.assertEqual(UMI, 'aaaaaaaa')
       self.assertEqual(SNP2, 'g')
+      self.assertEqual(SEQ2, 'TGaAACGtATaCATTAGttCACCTaGAAcaCGCCGATCA')
 
       # Test case 4.
       # Structure of a read 1.
       seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 5.
       seq = 'TGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
       
       # Test case 6.
       seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCA'
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 7.
-      # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAAcaCGCCGATCAgc'
-      #                    ^
+      # Extra mutations compared to test case 3.
+      seq = 'aaaaaaaaTGaAACttAcaCATTAGttCACCTaGAAcaCGCCGATCAgc'
+      #                    ^  ^
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
       # Test case 8.
-      # Extra mutation compared to test case 3.
-      seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAtcaCGCCGATCAgc'
-      #                                         ^
+      # Extra mutations compared to test case 3.
+      seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAtcaCGCCcATCAgc'
+      #                                         ^      ^
 
       with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_tag_and_variant(seq)
+         ex.extract_all(seq)
 
 
 if __name__ == '__main__':
-   unittest.main()
+   unittest.main(verbosity=2)

@@ -42,6 +42,7 @@ def main(f, fname, barcode_dict_1, barcode_dict_2, BL):
       scores = [float(a) for a in (FF, AT, GC)]
       winner = max((0,1,2), key=lambda x: scores[x])
       if winner == 0: continue
+      if scores[winner] < 2: continue
       ratio = scores[1] / (scores[1] + scores[2])
       if bcd in barcode_dict_1:
          the_dict = barcode_dict_1
@@ -57,9 +58,9 @@ def main(f, fname, barcode_dict_1, barcode_dict_2, BL):
       pos    = the_fields[3]
       GC1    = the_fields[5]
       GC2    = the_fields[6]
-      print "%s\t%.3f\t%s\t%d\t%s\t%s\t%d\t%s\t%s\t%s\t%s\t%s" % \
+      print "%s\t%.3f\t%s\t%d\t%s\t%s\t%d\t%s\t%s\t%s\t%s\t%s\t%s" % \
          (bcd, ratio, mmcode, tcode, lacode,
-               ctrl, rep, GC1, GC2, chrom, strand, pos)
+               ctrl, rep, GC1, GC2, chrom, strand, pos, fname)
 
 
 
