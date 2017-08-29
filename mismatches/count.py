@@ -116,15 +116,19 @@ class EventCounter:
       seqlist = [seq for seq in seqlist if len(seq) == L]
 
       con = bytearray('N'*L)
+      score = 1.0
       for i in range(L):
-         counter = defaultdict(int)
-         for seq in seqlist: counter[seq[i]] += 1
-         con[i] = max(counter, key=counter.get)
+         counter = defaultdict(float)
+         for seq in seqlist: counter[seq[i]] += 1.0
+         winner = max(counter, key=counter.get)
+         con[i] = winner
+         this_score = counter[winner] / sum(counter.values())
+         if this_score < score: score = this_score
 
-      return str(con)
+      return str(con), score
 
 
-   def outputseq(self, seqoutf, variant, seq1, n1, seq2, n2):
+   def outputseq(self, seqoutf, variant, bcd, umi):
       '''Write the consensus sequences to file for given UMI.'''
 
       decode = {
@@ -138,10 +142,16 @@ class EventCounter:
          ('C', 'G'): 'GC',
       }
 
+      SEQ1,s1 = self.consensus(self.seq1[bcd][umi])
+      SEQ2,s2 = self.consensus(self.seq2[bcd][umi])
+
+      n1 = len(self.seq1[bcd][umi])
+      n2 = len(self.seq2[bcd][umi])
+
       # Output to file.
       if variant in decode:
-         seqoutf.write('%s\t%s\t%d\t%s\t%d\n' % \
-               (decode[variant], seq1, n1, seq2, n2))
+         seqoutf.write('%s\t%s\t%s\t%d\t%f\t%s\t%d\t%f\n' % \
+               (bcd, decode[variant], SEQ1, n1, s1, SEQ2, n2, s2))
 
 
    def count(self, f, outf=sys.stdout, seqoutf=None):
@@ -193,13 +203,7 @@ class EventCounter:
                   umi, dict_of_variants)
             counter[variant] += 1
             if seqoutf:
-               self.outputseq(
-                  seqoutf, variant,
-                  self.consensus(self.seq1[bcd][umi]),
-                  len(self.seq1[bcd][umi]),
-                  self.consensus(self.seq2[bcd][umi]),
-                  len(self.seq2[bcd][umi])
-               )
+               self.outputseq(seqoutf, variant, bcd, umi)
          # If all UMIs were lost, the counter
          # is empty and there is nothing to show.
          if not counter:

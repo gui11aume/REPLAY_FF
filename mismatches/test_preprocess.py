@@ -47,126 +47,98 @@ class TestExtractor(unittest.TestCase):
       ex = preprocess.Read1Extractor()
 
       # Test case 1.
-      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
+      seq = 'aaaaGAATCATGAACACCCGCATCGAGAAGTACGAGGACGGCGGCGTGCTGCACGTGAGCTTCAGCTACCGCTACGAGGCCGGCCGCctga'
 
       BCD,SNP1,SEQ1 = ex.extract_all(seq)
-      self.assertEqual(BCD, 'aaaaaaaa')
-      self.assertEqual(SNP1, 'g')
-      self.assertEqual(SEQ1, 'GAATCATGAACACCCGCATCGCTACGAGGCCGGCCGC')
+      self.assertEqual(BCD, 'aaaa')
+      self.assertEqual(SNP1, 'c')
+      self.assertEqual(SEQ1, 'GAATCATGAACACCCGCATCGAGAAGTACGAGGACGGCGGCGTGCTGCACGTGAGCTTCAGCTACCGCTACGAGGCCGGCCGC')
 
-      # Test case 2.
-      seq = 'aaaaaaaaGAATCATGAACACCCGCATttCGCTACGAGGCCGGCCGCgc'
-
-      BCD,SNP1,SEQ1 = ex.extract_all(seq)
-      self.assertEqual(BCD, 'aaaaaaaa')
-      self.assertEqual(SNP1, 'g')
-      self.assertEqual(SEQ1, 'GAATCATGAACACCCGCATttCGCTACGAGGCCGGCCGC')
-
-      # Test case 3.
-      seq = 'aaaaaaaaGAAaCATtAACAgCCGCATttCGCTACGAcGCgcGCCGCgc'
+      # Test case 2 (10 substitutions)
+      seq = 'aaaaGAATCATtAACACCaGCATCaAGAAGaACGAGGACGGCGaCGTaCTGCACGTGtGCTTCAcCTtCCGCTACGAGcCCGGCCGCctga'
+      #                 ^      ^     ^     ^            ^   ^         ^      ^  ^          ^
 
       BCD,SNP1,SEQ1 = ex.extract_all(seq)
-      self.assertEqual(BCD, 'aaaaaaaa')
-      self.assertEqual(SNP1, 'g')
-      self.assertEqual(SEQ1, 'GAAaCATtAACAgCCGCATttCGCTACGAcGCgcGCCGC')
+      self.assertEqual(BCD, 'aaaa')
+      self.assertEqual(SNP1, 'c')
+      self.assertEqual(SEQ1, 'GAATCATtAACACCaGCATCaAGAAGaACGAGGACGGCGaCGTaCTGCACGTGtGCTTCAcCTtCCGCTACGAGcCCGGCCGC')
 
-      # Test case 4.
-      # Structure of a read 2.
-      seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
+      # Test case 3 (10 deletions)
+      seq = 'aaaaGAATCATAACACCGCATCAGAAGACGAGGACGGCGCGTCTGCACGTGGCTTCACTCCGCTACGAGCCGGCCGCctga'
 
-      with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_all(seq)
+      BCD,SNP1,SEQ1 = ex.extract_all(seq)
+      self.assertEqual(BCD, 'aaaa')
+      self.assertEqual(SNP1, 'c')
+      self.assertEqual(SEQ1, 'GAATCATAACACCGCATCAGAAGACGAGGACGGCGCGTCTGCACGTGGCTTCACTCCGCTACGAGCCGGCCGC')
 
-      # Test case 5.
-      seq = 'GAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
-
-      with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_all(seq)
-
-      # Test case 6.
-      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGC'
+      # Test case 4 (11 substitutions)
+      seq = 'aaaaGAATCATtAACACCaGCATCaAGAAGaACGAGcACGGCGaCGTaCTGCACGTGtGCTTCAcCTtCCGCTACGAGcCCGGCCGCctga'
+      #                 ^      ^     ^     ^     ^      ^   ^         ^      ^  ^          ^
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
 
-      # Test case 7.
-      # Extra mutations compared to test case 3.
-      seq = 'aaaaaaaaGAAaCATtgACAgCCaCATttCGCTACGAcGCgcGCCGCgc'
-      #                      ^      ^
+      # Test case 5 (11 deletions)
+      seq = 'aaaaGAATCATAACACCGCATCAGAAGACGAGACGGCGCGTCTGCACGTGGCTTCACTCCGCTACGAGCCGGCCGCctga'
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
 
-      # Test case 8.
-      # Extra mutations compared to test case 3.
-      seq = 'aaaaaaaaGAAaCATtAAtAgCCGCATttCGCTACGAcGtgcGCtGCgc'
-      #                        ^                    ^    ^
+      # Test case 6 (missing TGA).
+      seq = 'aaaaGAATCATAACACCGCATCAGAAGACGAGACGGCGCGTCTGCACGTGGCTTCACTCCGCTACGAGCCGGCCGCctta'
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
+
 
 
    def test_Read2Extractor(self):
       ex = preprocess.Read2Extractor()
 
       # Test case 1.
-      seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
+      seq = 'aaaaTGCAACGAATTCATTAGTGCGGATGATCTTGTCGGTGAAGATCACGCTGTCCTCGGGGAAGCCGGTGCCCACCACCTTGAAGTCGCCGATCAcgcg'
 
       UMI,SNP2,SEQ2 = ex.extract_all(seq)
-      self.assertEqual(UMI, 'aaaaaaaa')
-      self.assertEqual(SNP2, 'g')
-      self.assertEqual(SEQ2, 'TGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCA')
+      self.assertEqual(UMI, 'aaaa')
+      self.assertEqual(SNP2, 'c')
+      self.assertEqual(SEQ2, 'TGCAACGAATTCATTAGTGCGGATGATCTTGTCGGTGAAGATCACGCTGTCCTCGGGGAAGCCGGTGCCCACCACCTTGAAGTCGCCGATCA')
 
-      # Test case 2.
-      seq = 'aaaaaaaaTGCAACGAATTCATTAGttCACCTTGAAGTCGCCGATCAgc'
-
-      UMI,SNP2,SEQ2 = ex.extract_all(seq)
-      self.assertEqual(UMI, 'aaaaaaaa')
-      self.assertEqual(SNP2, 'g')
-      self.assertEqual(SEQ2, 'TGCAACGAATTCATTAGttCACCTTGAAGTCGCCGATCA')
-
-      # Test case 3.
-      seq = 'aaaaaaaaTGaAACGtATaCATTAGttCACCTaGAAcaCGCCGATCAgc'
+      # Test case 2 (10 substitutions).
+      seq = 'aaaaTGaAACGAATTCAaTAGTcCGGAgGATCTTGTCGGTGAcGATCACGCTcTCCTCGGGGAtGCCGGTGgCCACgACCTTGAAGaCGCCGATCAcgcg'
+      #            ^          ^    ^    ^              ^         ^          ^       ^    ^         ^
 
       UMI,SNP2,SEQ2 = ex.extract_all(seq)
-      self.assertEqual(UMI, 'aaaaaaaa')
-      self.assertEqual(SNP2, 'g')
-      self.assertEqual(SEQ2, 'TGaAACGtATaCATTAGttCACCTaGAAcaCGCCGATCA')
+      self.assertEqual(UMI, 'aaaa')
+      self.assertEqual(SNP2, 'c')
+      self.assertEqual(SEQ2, 'TGaAACGAATTCAaTAGTcCGGAgGATCTTGTCGGTGAcGATCACGCTcTCCTCGGGGAtGCCGGTGgCCACgACCTTGAAGaCGCCGATCA')
 
-      # Test case 4.
-      # Structure of a read 1.
-      seq = 'aaaaaaaaGAATCATGAACACCCGCATCGCTACGAGGCCGGCCGCgc'
+      # Test case 3 (10 deletions).
+      seq = 'aaaaTGAACGAATTCATAGTCGGAGATCTTGTCGGTGAGATCACGCTTCCTCGGGGAGCCGGTGCCACACCTTGAAGCGCCGATCAcgcg'
 
-      with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_all(seq)
+      UMI,SNP2,SEQ2 = ex.extract_all(seq)
+      self.assertEqual(UMI, 'aaaa')
+      self.assertEqual(SNP2, 'c')
+      self.assertEqual(SEQ2, 'TGAACGAATTCATAGTCGGAGATCTTGTCGGTGAGATCACGCTTCCTCGGGGAGCCGGTGCCACACCTTGAAGCGCCGATCA')
 
-      # Test case 5.
-      seq = 'TGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCAgc'
-
-      with self.assertRaises(preprocess.AberrantReadException):
-         ex.extract_all(seq)
-      
-      # Test case 6.
-      seq = 'aaaaaaaaTGCAACGAATTCATTAGCACCTTGAAGTCGCCGATCA'
+      # Test case 4 (11 substitutions).
+      seq = 'aaaaTGaAACGAATTCAaTAGTcCGGAgGATCTTtTCGGTGAcGATCACGCTcTCCTCGGGGAtGCCGGTGgCCACgACCTTGAAGaCGCCGATCAcgcg'
+      #            ^          ^    ^    ^      ^       ^         ^          ^       ^    ^         ^
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
 
-      # Test case 7.
-      # Extra mutations compared to test case 3.
-      seq = 'aaaaaaaaTGaAACttAcaCATTAGttCACCTaGAAcaCGCCGATCAgc'
-      #                    ^  ^
+      # Test case 5 (11 deletions).
+      seq = 'aaaaTGAACGAATTCATAGTCGGAGATCTGTCGGTGAGATCACGCTTCCTCGGGGAGCCGGTGCCACACCTTGAAGCGCCGATCAcgcg'
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
 
-      # Test case 8.
-      # Extra mutations compared to test case 3.
-      seq = 'aaaaaaaaTGaAACttATaCATTAGttCACCTaGAtcaCGCCcATCAgc'
-      #                                         ^      ^
+      # Test case 6 (missing GCG).
+      seq = 'aaaaTGAACGAATTCATAGTCGGAGATCTGTCGGTGAGATCACGCTTCCTCGGGGAGCCGGTGCCACACCTTGAAGCGCCGATCAcgtg'
 
       with self.assertRaises(preprocess.AberrantReadException):
          ex.extract_all(seq)
+
 
 
 if __name__ == '__main__':

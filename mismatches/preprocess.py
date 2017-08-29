@@ -59,34 +59,34 @@ class Extractor:
       primer, and the variant towards the end of the read.'''
 
       # First extract the prefix and the suffix
-      prefix = self.seq_after_tag.matchPrefix(txt, False)
-      if not prefix:
+      hit = self.seq.match(txt)
+      if not hit:
          raise AberrantReadException
-      seq = self.seq_after_tag.matchSuffix(txt, True)
-
-      # The first character of the suffix is the variant.
-      suffix = self.seq_before_variant.matchSuffix(txt, False)
-      if not suffix:
+      try:
+         prefix, seq, suffix = hit.tokenize()
+      except ValueError:
          raise AberrantReadException
-      seq = self.seq_before_variant.matchPrefix(seq, True)
-
-      # The prefix is the tag, the first character
-      # of the suffix is the variant.
+      if len(suffix) < 4 or suffix[1:4].upper() != self.check:
+         raise AberrantReadException
       return (prefix, suffix[0], seq)
 
 
 
 class Read1Extractor(Extractor):
    def __init__(self):
-      self.seq_after_tag = seeq.compile('GAATCATGAACACCCGCAT', 4)
-      self.seq_before_variant = seeq.compile('CGCTACGAGGCCGGCCGC', 4)
+      # The sequence to look for.
+      self.seq = seeq.compile('GAATCATGAACACCCGCATCGAGAAGTACGAGGACGGCGGCGTGCTGCACGTGAGCTTCAGCTACCGCTACGAGGCCGGCCGC', 10)
+      # The 3 nucleotides after the mismatch.
+      self.check = 'TGA'
 
 
 class Read2Extractor(Extractor):
    def __init__(self):
-      self.seq_after_tag  = seeq.compile('TGCAACGAATTCATTAG', 4)
-      self.seq_before_variant = seeq.compile('CACCTTGAAGTCGCCGATCA', 4)
+      # The sequence to look for.
+      self.seq = seeq.compile('TGCAACGAATTCATTAGTGCGGATGATCTTGTCGGTGAAGATCACGCTGTCCTCGGGGAAGCCGGTGCCCACCACCTTGAAGTCGCCGATCA', 10)
 
+      # The 3 nucleotides after the mismatch.
+      self.check = 'GCG'
 
 def main(f, g, info):
    '''Top-level function to pre-process paired fastq files.'''

@@ -119,23 +119,31 @@ LA_c_13507_CTGGAT.co.gz                                                    \
 LA_c_13507_GCTGAA.co.gz                                                    \
 LA_c_13507_TAGGAC.co.gz                                                    \
 LA_c_13507_TCTACA.co.gz                                                    \
-#Gala_24_15624_CGATGT.co.gz                                                 \
-#Gala_24_15624_GTTCAC.co.gz                                                 \
-#Gala_24_15624_TCTTAG.co.gz                                                 \
-#Gala_24_15624_TGCAGT.co.gz                                                 \
-#Gala_24c_15622_AGCTTG.co.gz                                                \
-#Gala_24c_15622_GCCAAG.co.gz                                                \
-#Gala_24c_15622_TGACCA.co.gz                                                \
-#Gala_24c_15622_TTAGGC.co.gz                                                \
-#Gala_48_15625_CTTGTA.co.gz                                                 \
-#Gala_48_15625_GCTGAA.co.gz                                                 \
-#Gala_48_15625_GGCTAC.co.gz                                                 \
-#Gala_48_15625_TAGCTT.co.gz                                                 \
-#Gala_48c_15623_ACAGTG.co.gz                                                \
-#Gala_48c_15623_ACTTGA.co.gz                                                \
-#Gala_48c_15623_ATGTCT.co.gz                                                \
-#Gala_48c_15623_GATCAG.co.gz                                                \
-#Gala_48c_15623_GATCAG.co.gz                                                \                                               
+Gala_24_15624_CGATGT.co.gz                                                 \
+Gala_24_15624_GTTCAC.co.gz                                                 \
+Gala_24_15624_TCTTAG.co.gz                                                 \
+Gala_24_15624_TGCAGT.co.gz                                                 \
+Gala_24c_15622_AGCTTG.co.gz                                                \
+Gala_24c_15622_GCCAAG.co.gz                                                \
+Gala_24c_15622_TGACCA.co.gz                                                \
+Gala_24c_15622_TTAGGC.co.gz                                                \
+Gala_48_15625_CTTGTA.co.gz                                                 \
+Gala_48_15625_GCTGAA.co.gz                                                 \
+Gala_48_15625_GGCTAC.co.gz                                                 \
+Gala_48_15625_TAGCTT.co.gz                                                 \
+Gala_48c_15623_ACAGTG.co.gz                                                \
+Gala_48c_15623_ACTTGA.co.gz                                                \
+Gala_48c_15623_ATGTCT.co.gz                                                \
+Gala_48c_15623_GATCAG.co.gz                                                \
+Gala_48c_15623_GATCAG.co.gz
+
+BAD=                                                                       \
+Gala_48c_15623_GATCAG                                                      \
+Gala_48c_15623_ACTTGA                                                      \
+Gala_24c_15622_GCCAAG                                                      \
+CA_48c_15638_ACAGTG                                                        \
+CA_48_15640_TAGCTT                                                         \
+CA_48_15640_GCTGAA
 
 all: $(TARGETS)
 
@@ -147,6 +155,9 @@ all: $(TARGETS)
 
 %.co.gz: %.pps %.stc
 	python count.py $^ $*_seq.txt | gzip > $@ && rm $^ && gzip $*_seq.txt
+
+rmbad:
+	rm -f $(addsuffix *, $(BAD))
 
 clean:
 	rm -rf *.pps *.co.gz
