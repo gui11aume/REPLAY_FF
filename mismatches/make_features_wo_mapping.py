@@ -12,15 +12,7 @@ def get_black_list(f):
    return S
 
 
-def makedict(f):
-   D = dict()
-   for line in f:
-      items = line.split()
-      D[items[0]] = items
-   return D
-
-
-def main(f, fname, barcode_dict_1, barcode_dict_2, BL):
+def main(f, fname, BL):
 
    mmcode = { 'GA':'GA',
          'GT':'GT', 'CA':'CA' }.get(fname[:2].upper(), 'CT')
@@ -40,38 +32,18 @@ def main(f, fname, barcode_dict_1, barcode_dict_2, BL):
       # Skip barcodes in the black list.
       if bcd in BL: continue
       scores = [float(a) for a in (FF, AT, GC)]
-      # Must have more than one UMI against FF.
-      if scores[0] >= max(scores)-1:continue
+      if scores[0] >= max(scores)-1: continue
       winner = max((0,1,2), key=lambda x: scores[x])
       if scores[winner] < 2: continue
       ratio = scores[1] / (scores[1] + scores[2])
-      if bcd in barcode_dict_1:
-         the_dict = barcode_dict_1
-         rep = 1
-      elif bcd in barcode_dict_2:
-         the_dict = barcode_dict_2
-         rep = 2
-      else:
-         continue
-      the_fields = the_dict[bcd]
-      chrom  = the_fields[1]
-      strand = the_fields[2]
-      pos    = the_fields[3]
-      GC1    = the_fields[5]
-      GC2    = the_fields[6]
-      print "%s\t%.3f\t%s\t%d\t%s\t%s\t%d\t%s\t%s\t%s\t%s\t%s\t%s" % \
-         (bcd, ratio, mmcode, tcode, lacode,
-               ctrl, rep, GC1, GC2, chrom, strand, pos, fname)
+      print "%s\t%.3f\t%s\t%d\t%s\t%s" % \
+         (bcd, ratio, mmcode, tcode, lacode, ctrl)
 
 
 
 if __name__ == '__main__':
    with gzopen(sys.argv[1]) as f:
       BL = get_black_list(f)
-   with gzopen(sys.argv[3]) as f:
-      barcode_dict_1 = makedict(f)
-   with gzopen(sys.argv[4]) as f:
-      barcode_dict_2 = makedict(f)
 
    with gzopen(sys.argv[2]) as f:
-      main(f, sys.argv[2], barcode_dict_1, barcode_dict_2, BL)
+      main(f, sys.argv[2], BL)

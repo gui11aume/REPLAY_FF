@@ -30,6 +30,7 @@ class TieException(Exception):
 #    CA    G:A
 #    GA    C:A
 #    GT    C:T
+#    TC    A:C
 
 SCARCODES = {
    'CT': 'CGCTAATTAATG',

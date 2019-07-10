@@ -145,6 +145,65 @@ CA_48c_15638_ACAGTG                                                        \
 CA_48_15640_TAGCTT                                                         \
 CA_48_15640_GCTGAA
 
+CONTROLS=                                                                  \
+GA_24c_15171_AGCTTG                                                        \
+GA_24c_15171_GCCAAG                                                        \
+GA_24c_15171_TGACCA                                                        \
+GA_24c_15171_TTAGGC                                                        \
+GA_48c_15172_ACAGTG                                                        \
+GA_48c_15172_ACTTGA                                                        \
+GA_48c_15172_ATGTCT                                                        \
+GA_48c_15172_GATCAG                                                        \
+GA_48c_15172_TCTACA                                                        \
+GT_24c_15430_AGCTTG                                                        \
+GT_24c_15430_GCCAAG                                                        \
+GT_24c_15430_TGACCA                                                        \
+GT_24c_15430_TTAGGC                                                        \
+GT_48c_15431_ACAGTG                                                        \
+GT_48c_15431_ACTTGA                                                        \
+GT_48c_15431_ATGTCT                                                        \
+GT_48c_15431_GATCAG                                                        \
+CA_24c_15637_AGCTTG                                                        \
+CA_24c_15637_GCCAAG                                                        \
+CA_24c_15637_TGACCA                                                        \
+CA_24c_15637_TTAGGC                                                        \
+CA_48c_15638_ACTTGA                                                        \
+CA_48c_15638_ATGTCT                                                        \
+CA_48c_15638_GATCAG                                                        \
+GTLa_24c_15477_AGCTTG                                                      \
+GTLa_24c_15477_GCCAAG                                                      \
+GTLa_24c_15477_TGACCA                                                      \
+GTLa_24c_15477_TTAGGC                                                      \
+GTLa_48c_15478_ACAGTG                                                      \
+GTLa_48c_15478_ACTTGA                                                      \
+GTLa_48c_15478_ATGTCT                                                      \
+GTLa_48c_15478_GATCAG                                                      \
+CAla_24c_15641_AGCTTG                                                      \
+CAla_24c_15641_GCCAAG                                                      \
+CAla_24c_15641_TGACCA                                                      \
+CAla_24c_15641_TTAGGC                                                      \
+CAla_48c_15642_ACAGTG                                                      \
+CAla_48c_15642_ACTTGA                                                      \
+CAla_48c_15642_ATGTCT                                                      \
+CAla_48c_15642_GATCAG                                                      \
+GAn_la_c_20464_CTGGAT                                                      \
+GAn_la_c_20464_GCTGAA                                                      \
+GAn_la_c_20464_TAGGAC                                                      \
+GAn_la_c_20464_TCTACA                                                      \
+con_13072_AGCTTG                                                           \
+con_13072_CGATGT                                                           \
+con_13072_CTGGAT                                                           \
+con_13072_TTAGGC                                                           \
+LA_c_13507_CTGGAT                                                          \
+LA_c_13507_GCTGAA                                                          \
+LA_c_13507_TAGGAC                                                          \
+LA_c_13507_TCTACA                                                          \
+Gala_24c_15622_AGCTTG                                                      \
+Gala_24c_15622_TGACCA                                                      \
+Gala_24c_15622_TTAGGC                                                      \
+Gala_48c_15623_ACAGTG                                                      \
+Gala_48c_15623_ATGTCT
+
 all: $(TARGETS)
 
 %.pps: %_read1.fastq.gz %_read2.fastq.gz
@@ -158,6 +217,9 @@ all: $(TARGETS)
 
 rmbad:
 	rm -f $(addsuffix *, $(BAD))
+
+mvctrl:
+	mv $(addsuffix *, $(CONTROLS)) controls
 
 clean:
 	rm -rf *.pps *.co.gz

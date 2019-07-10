@@ -24,36 +24,43 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
    barcode making sure that the other read contains the transposon."""
 
    # Those are the scarcodes that allow to identify which
-   # experiment is sequenced (CA, GA or GT mismatch).
+   # experiment is sequenced (CA, GA, GT or TC mismatch).
    matchers = {
       'CA': seeq.compile('GCTAGCAGTCAGGAATCATG', 3),
       'GA': seeq.compile('GCTAGCTCGTTGGAATCATG', 3),
       'GT': seeq.compile('GCTAGCTCCGCAGAATCATG', 3),
+      'TC': seeq.compile('GCTAGCGCGCGTGAATCATG', 3),
    }
    
    indexes = {
       'CA': frozenset(['AAC', 'ACA', 'AGG', 'TTC']),
       'GA': frozenset(['ATT', 'CCG', 'TAA', 'TGC']),
       'GT': frozenset(['ACT', 'ATC', 'TGA', 'TGT']),
+      'TC': frozenset(['ACT', 'AAC', 'CCG', 'TTC']),
    }
 
    # Assign all valid triplets to a single fasta file for
    # the CT mismatch. Other files can be properly demultiplexed.
    outfiles = {
-      'AAC': open('CA_AAC.fasta', 'w'),
-      'ACA': open('CA_ACA.fasta', 'w'),
-      'AGG': open('CA_AGG.fasta', 'w'),
-      'TTC': open('CA_TTC.fasta', 'w'),
+      ('CA','AAC'): open('CA_AAC.fasta', 'w'),
+      ('CA','ACA'): open('CA_ACA.fasta', 'w'),
+      ('CA','AGG'): open('CA_AGG.fasta', 'w'),
+      ('CA','TTC'): open('CA_TTC.fasta', 'w'),
 
-      'ACT': open('GT_ACT.fasta', 'w'),
-      'ATC': open('GT_ATC.fasta', 'w'),
-      'TGA': open('GT_TGA.fasta', 'w'),
-      'TGT': open('GT_TGT.fasta', 'w'),
+      ('GT','ACT'): open('GT_ACT.fasta', 'w'),
+      ('GT','ATC'): open('GT_ATC.fasta', 'w'),
+      ('GT','TGA'): open('GT_TGA.fasta', 'w'),
+      ('GT','TGT'): open('GT_TGT.fasta', 'w'),
 
-      'ATT': open('GA_ATT.fasta', 'w'),
-      'CCG': open('GA_CCG.fasta', 'w'),
-      'TAA': open('GA_TAA.fasta', 'w'),
-      'TGC': open('GA_TGC.fasta', 'w'),
+      ('GA','ATT'): open('GA_ATT.fasta', 'w'),
+      ('GA','CCG'): open('GA_CCG.fasta', 'w'),
+      ('GA','TAA'): open('GA_TAA.fasta', 'w'),
+      ('GA','TGC'): open('GA_TGC.fasta', 'w'),
+
+      ('TC','ACT'): open('TC_ACT.fasta', 'w'),
+      ('TC','AAC'): open('TC_AAC.fasta', 'w'),
+      ('TC','CCG'): open('TC_CCG.fasta', 'w'),
+      ('TC','TTC'): open('TC_TTC.fasta', 'w'),
    }
 
    # End of the pT2 transposon sequence.
@@ -81,7 +88,7 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
             # index. Check that it belongs to the right group.
             idx = line2[:3]
             if idx in indexes[MM]:
-               outf = outfiles[idx]
+               outf = outfiles[(MM,idx)]
                outf.write('>%s\n%s\n' % (brcd,genome))
 
             # If the script reaches this point, the mismatch was

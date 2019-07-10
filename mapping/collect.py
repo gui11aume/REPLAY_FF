@@ -14,7 +14,8 @@ import seeq
 
 from gzopen import gzopen
 
-FASTASEQ = "/data/mm10_pT2.fasta"
+#FASTASEQ = "/data/mm10_pT2.fasta"
+FASTASEQ = "/data/mm9_pT2.fasta"
 LOGFNAME = 'tripelog.txt'
 
 class FormatException(Exception):
@@ -98,6 +99,8 @@ def collect_integrations(mapfnames, stcfnames, genome):
          (GC10kb, GC1Mb) = compute_GC(chrom, pos, genome)
       except (ValueError, KeyError):
          continue
+      except ZeroDivisionError:
+         (GC10kb, GC1Mb) = (float('nan'), float('nan'))
       print '%s\t%s\t%s\t%d\t%d\t%.2f\t%.2f' % \
             (brcd,chrom,strand,pos,total,GC10kb,GC1Mb)
    
