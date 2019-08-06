@@ -135,8 +135,21 @@ Gala_48c_15623_ACAGTG.co.gz                                                \
 Gala_48c_15623_ACTTGA.co.gz                                                \
 Gala_48c_15623_ATGTCT.co.gz                                                \
 Gala_48c_15623_GATCAG.co.gz                                                \
-Gala_48c_15623_GATCAG.co.gz
+Gala_48c_15623_GATCAG.co.gz                                                \
+24_34998_ACAGTG.co.gz                                                      \
+24_34998_GTTCAC.co.gz                                                      \
+24_34998_TCTTAG.co.gz                                                      \
+24_34998_TGCAGT.co.gz                                                      \
+48_34999_ATGTCT.co.gz                                                      \
+48_34999_GCTGAA.co.gz                                                      \
+48_34999_TAGGAC.co.gz                                                      \
+48_34999_TCTACA.co.gz                                                      \
+r1r2_34997_AGCTTG.co.gz                                                    \
+r1r2_34997_CGATGT.co.gz                                                    \
+r1r2_34997_CTGGAT.co.gz                                                    \
+r1r2_34997_TTAGGC.co.gz
 
+# Manually flagged as bad profiles from clustering analyses.
 BAD=                                                                       \
 Gala_48c_15623_GATCAG                                                      \
 Gala_48c_15623_ACTTGA                                                      \
@@ -202,7 +215,12 @@ Gala_24c_15622_AGCTTG                                                      \
 Gala_24c_15622_TGACCA                                                      \
 Gala_24c_15622_TTAGGC                                                      \
 Gala_48c_15623_ACAGTG                                                      \
-Gala_48c_15623_ATGTCT
+Gala_48c_15623_ATGTCT                                                      \
+r1r2_34997_AGCTTG                                                          \
+r1r2_34997_CGATGT                                                          \
+r1r2_34997_CTGGAT                                                          \
+r1r2_34997_TTAGGC
+
 
 all: $(TARGETS)
 
@@ -219,7 +237,7 @@ rmbad:
 	rm -f $(addsuffix *, $(BAD))
 
 mvctrl:
-	mv $(addsuffix *, $(CONTROLS)) controls
+	mv $(addsuffix *, $(CONTROLS)) controls/
 
 clean:
 	rm -rf *.pps *.co.gz

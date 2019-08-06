@@ -9,6 +9,7 @@ Scarcodes:
    CA: GCTAGCAGTCAG
    GA: GCTAGCTCGTTG
    GT: GCTAGCTCCGCA
+   TC: GCTAGCGCGCGT
 '''
 
 import sys

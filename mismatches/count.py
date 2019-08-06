@@ -37,6 +37,7 @@ SCARCODES = {
    'CA': 'GCTAGCAGTCAG',
    'GA': 'GCTAGCTCGTTG',
    'GT': 'GCTAGCTCCGCA',
+   'TC': 'GCTAGCGCGCGT',
 }
 
 
@@ -48,7 +49,7 @@ class ScarcodeRemover():
    For instance, if the tag has the following structure
 
             agatgctgagctaggcc tcCTAATTAATG
-                barcode         scaacode
+                barcode         scarcode
 
    the recovered barcode will be
 
@@ -62,6 +63,7 @@ class ScarcodeRemover():
          'CA': seeq.compile(SCARCODES['CA'], 2),
          'GA': seeq.compile(SCARCODES['GA'], 2),
          'GT': seeq.compile(SCARCODES['GT'], 2),
+         'TC': seeq.compile(SCARCODES['TC'], 2),
       }[MM]
 
    def remove(self, bcd_scar):
@@ -98,6 +100,7 @@ class EventCounter:
          'GT': (('T', 'C'), ('T', 'A'), ('G', 'C')),
          'CA': (('A', 'G'), ('A', 'T'), ('C', 'G')),
          'CT': (('T', 'G'), ('T', 'A'), ('C', 'G')),
+         'TC': (('G', 'T'), ('A', 'T'), ('G', 'C')),
       }
 
       # Use the starcode file of the normalizer in order
@@ -263,6 +266,7 @@ class CountingInfo:
       SCARCODES['CA']: 'CA',
       SCARCODES['GA']: 'GA',
       SCARCODES['GT']: 'GT',
+      SCARCODES['TC']: 'TC',
    }
 
 
@@ -324,6 +328,7 @@ class CountingInfo:
          SCARCODES['CA']: 0,
          SCARCODES['GA']: 0,
          SCARCODES['GT']: 0,
+         SCARCODES['TC']: 0,
       }
 
       # Note: the class 'TagNormalizer' was made
