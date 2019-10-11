@@ -30,33 +30,33 @@ $(FASTA):
 	python makefasta_nextseq.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
 		/data/GF2-iPCR-pT2FF_R2.fastq.gz
 	python makefasta_hiseq.py /data/MM_M_14930_read1.fastq.gz \
-		/data/MM_M_14930_read2.fastq.gz
+		/data/MM_M_14930_read2.fastq.gz CA_GT_GA
 	python makefasta_hiseq.py /data/lane6_lane6_read1.fastq.gz \
-		/data/lane6_lane6_read2.fastq.gz
+		/data/lane6_lane6_read2.fastq.gz TC
 
 #%.map: %.fasta
 #	gem-mapper -I /data/mm10_pT2_unmasked.gem \
 #		-q ignore --unique-mapping -T4 -i $< > $@
-%.map: %.fasta
+%.map.gz: %.fasta
 	gem-mapper -I /data/mm9_pT2_unmasked.gem \
-		-q ignore --unique-mapping -T4 -i $< > $@
+		-q ignore --unique-mapping -T4 -i $< | gzip > $@
 
 
 .SECONDARY:
-%.stc: %.map
-	cut -f1 $< | starcode -t4 -d2 --print-clusters -o $@
+%.stc: %.map.gz
+	zcat $< | cut -f1 | starcode -t4 -d2 --print-clusters -o $@
 
 # The secondary expansions will allow to replace the matching
 # stem of the rule by the variables declared above.
 .SECONDEXPANSION:
-%.ins: $$(addsuffix .map, $$($$*)) $$(addsuffix .stc, $$($$*))
+%.ins: $$(addsuffix .map.gz, $$($$*)) $$(addsuffix .stc, $$($$*))
 	python collect.py $^ > $@
 
 black.lst: $(INSERTIONS)
 	python make_blacklist.py $^ > $@
 
 cleantmp:
-	rm -f *.fasta *.map *.stc
+	rm -f *.fasta *.map.gz *.stc
 
 clean:
-	rm -f *fasta *.map *.stc *.ins *.bcd
+	rm -f *fasta *.map.gz *.stc *.ins *.bcd

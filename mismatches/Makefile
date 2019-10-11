@@ -147,7 +147,20 @@ Gala_48c_15623_GATCAG.co.gz                                                \
 r1r2_34997_AGCTTG.co.gz                                                    \
 r1r2_34997_CGATGT.co.gz                                                    \
 r1r2_34997_CTGGAT.co.gz                                                    \
-r1r2_34997_TTAGGC.co.gz
+r1r2_34997_TTAGGC.co.gz                                                    \
+24_35175_ACAGTG.co.gz                                                      \
+24_35175_GTTCAC.co.gz                                                      \
+24_35175_TCTTAG.co.gz                                                      \
+24_35175_TGCAGT.co.gz                                                      \
+48_34999_TCTACA.co.gz                                                      \
+48_35176_ATGTCT.co.gz                                                      \
+48_35176_GCTGAA.co.gz                                                      \
+48_35176_TAGGAC.co.gz                                                      \
+48_35176_TCTACA.co.gz                                                      \
+R1R2_35174_AGCTTG.co.gz                                                    \
+R1R2_35174_CGATGT.co.gz                                                    \
+R1R2_35174_CTGGAT.co.gz                                                    \
+R1R2_35174_TTAGGC.co.gz
 
 # Manually flagged as bad profiles from clustering analyses.
 BAD=                                                                       \
@@ -219,7 +232,11 @@ Gala_48c_15623_ATGTCT                                                      \
 r1r2_34997_AGCTTG                                                          \
 r1r2_34997_CGATGT                                                          \
 r1r2_34997_CTGGAT                                                          \
-r1r2_34997_TTAGGC
+r1r2_34997_TTAGGC                                                          \
+R1R2_35174_AGCTTG                                                          \
+R1R2_35174_CGATGT                                                          \
+R1R2_35174_CTGGAT                                                          \
+R1R2_35174_TTAGGC      
 
 
 all: $(TARGETS)

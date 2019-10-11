@@ -28,7 +28,7 @@ set.seed(123)
 
 PCH=c(rep(20,19), 17, 18)
 
-pdf("coverage.pdf", width=2)
+pdf("coverage.pdf", width=2, useDingbats=FALSE)
 par(mar=c(1,3.5,.5,.5))
 plot(rnorm(n=21), (CA*sum(csize)/csize)$V2, col=COL[1], pch=PCH,
    bty="n", xaxt="n", yaxt="n", xlim=c(-3,3), col.lab="grey25",

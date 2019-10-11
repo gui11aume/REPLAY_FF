@@ -10,8 +10,10 @@ GA1 = subset(read.table("../mapping/GA1.ins"), V2 != "pT2")
 GA2 = subset(read.table("../mapping/GA2.ins"), V2 != "pT2")
 GT1 = subset(read.table("../mapping/GT1.ins"), V2 != "pT2")
 GT2 = subset(read.table("../mapping/GT2.ins"), V2 != "pT2")
+TC1 = subset(read.table("../mapping/TC1.ins"), V2 != "pT2")
+TC2 = subset(read.table("../mapping/TC2.ins"), V2 != "pT2")
 
-allins = rbind(CA1, CA2, CT1, CT2, GA1, GA2, GT1, GT2)
+allins = rbind(CA1, CA2, CT1, CT2, GA1, GA2, GT1, GT2, TC1, TC2)
 gallins = GRanges(Rle(allins$V2), IRanges(start=allins$V4, width=1))
 
 # Get expression data in mouse ES cells.
@@ -45,19 +47,21 @@ Olo = sum(countOverlaps(gallins, gENSG_lo))
 Ohi = sum(countOverlaps(gallins, gENSG_hi))
 Orest = nrow(allins) - Olo - Ohi
 
-# Total nominal size of mm9 2780285931.
+# Total size of mm9: 2780285931.
 Elo = sum(sum(coverage(gENSG_lo)))
 Ehi = sum(sum(coverage(gENSG_hi)))
-Erest = 2780285931 - Elo - Ehi
+Erest = 2780285931. - Elo - Ehi
 
 obsv = c(Ohi, Olo, Orest)
 expt = c(Ehi, Elo, Erest)
 
-print(100*obsv / sum(obsv))
-print(100*expt / sum(expt))
+print(obsv)
+print(expt / sum(expt) * sum(obsv))
+
+COL=c("#0B2639", "#598078", "#E1DBC0")
 
 setwd("../figures")
-pdf("spie_genes.pdf", useDingbats=F)
+pdf("spie_genes.pdf", useDingbats=FALSE)
 par(mar=c(0,0,0,0))
-spiechart(expected=expt, observed=obsv)
+spiechart(expected=expt, observed=obsv, col=COL)
 dev.off()

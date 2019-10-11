@@ -83,7 +83,7 @@ RCircos.Reset.Plot.Parameters(rcircos.params)
 COL = c("#442288", "#6CA2EA", "#B5D33D", "#FED23F", "#EB7D5B")
 
 setwd("../figures")
-pdf("integ_circos.pdf", useDingbats=F)
+pdf("integ_circos.pdf", useDingbats=FALSE)
 par(mar=c(0,0,0,0))
 RCircos.Set.Plot.Area()
 RCircos.Chromosome.Ideogram.Plot()

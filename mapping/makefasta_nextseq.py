@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 # Standard library packages.
+import re
 import sys
 
 from itertools import izip
@@ -51,11 +52,14 @@ def extract_reads_from_PE_fastq(fname_iPCR_PE1, fname_iPCR_PE2):
          # then the scarcode must have been the right one.
          if len(brcd) < 13 or len(brcd) > 25: continue
 
-         # Remove first 25 nucleotides, split on "CATG" and take
-         # the first fragment. If genome fragment is too short
-         # for mapping then throw it away.
-         genome = line2.rstrip()[25:].split('CATG')[0]
-         if len(genome) < 18: continue
+         # Remove first 25 nucleotides.
+         suff = line2.rstrip()[25:].split('CATG')[0]
+         # Cut genome fragment after the first CATG.
+         genome = re.sub(r'CATG.*', 'CATG', suff)
+
+         # Avoid short strings that are unmappable.
+         if len(genome) < 20:
+            genome = 'gatcctgatgctagtgactgatgagctgctgaagctgga'
 
          # The first 3 nucleotides of the reverse read are the
          # index. Check that it belongs to the right group.

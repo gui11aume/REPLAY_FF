@@ -61,19 +61,20 @@ def collect_integrations(mapfnames, stcfnames, genome):
    counts = defaultdict(lambda: defaultdict(int))
 
    for fname in mapfiles:
-      with open(fname) as f:
+      with gzopen(fname) as f:
          for line in f:
-            items = line.split()
+            items = line.rstrip().split('\t')
             try:
                barcode = canonical[items[0]]
             except KeyError:
                # Barcode has no canonical (can happen).
                continue
-            if items[3] == '-':
-               if items[2] == '!': position = ('!' , 0)
+            if items[4] == '-':
+               # Unmapped.
+               if items[3] == '!': position = ('!' , 0)
                else: continue
             else:
-               pos = items[3].split(':')
+               pos = items[4].split(':')
                loc = int(pos[2]) if pos[1] == '+' else \
                      int(pos[2]) + len(items[1])
                position = (pos[0], loc, pos[1])

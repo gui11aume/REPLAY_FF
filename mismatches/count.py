@@ -22,8 +22,8 @@ class TieException(Exception):
 
 #  ------      IMPORTANT NOTE      ------
 
-# The scarcodes mark the "linear" names of the mismatches, i.e.
-# the nucleotides as they appear in the product of gene synthesis.
+# The two-letter codes are the key nucleotides in the reverse
+# order of how they appear in the product of gene synthesis.
 # The mismatches as they happen during the repair process are
 # as follows:
 #    CT    G:T
