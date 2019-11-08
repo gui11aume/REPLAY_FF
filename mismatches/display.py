@@ -61,6 +61,22 @@ def just_show(f):
       sys.stdout.write(line)
 
 
+def show_ratio(f):
+   for line in f:
+      if line.startswith('barcode'): continue
+      try:
+         brcd, ff, at, gc = line.split()
+      except:
+         print line
+         raise
+      if brcd in TOREMOVE: continue
+      FF, AT, GC = float(ff), float(at), float(gc)
+      if FF > 0 and FF > AT and FF > GC: continue
+      if AT + GC < 2 or len(brcd) < 12:  continue
+      ratio = AT / (AT + GC)
+      sys.stdout.write('%s\t%.3f\n' % (brcd, ratio))
+
+
 def display(f):
    zo = 0
    ATwins = 0
@@ -93,8 +109,8 @@ if __name__ == '__main__':
    for fname in sys.argv[2:]:
       with gzopen(fname) as f:
          remove_barcodes(f)
-   with gzopen(sys.argv[1]) as f:
+   with open(sys.argv[1]) as f:
+      show_ratio(f)
 #      just_show(f)
-      sys.stdout.write(sys.argv[1])
-      sys.stdout.write('\t%.3f\t%.3f\t%.3f\t%d\t%d\n' % display(f))
+#      sys.stdout.write('\t%.3f\t%.3f\t%.3f\t%d\t%d\n' % display(f))
 #      sys.stdout.write('\t%.3f\n' % count(f))

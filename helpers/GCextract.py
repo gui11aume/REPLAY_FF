@@ -4,14 +4,25 @@
 import re
 import sys
 
-FASTASEQ = "/data/mm10_pT2.fasta"
+FASTASEQ = "/data/mm9_pT2.fasta"
 
-def read_genome(f):
+
+def compute_GC(seqname, seq):
+   for s in range(0,len(seq),5000):
+      subseq = seq[s:(s+5000)]
+      try:
+         GC = (subseq.count("G") + subseq.count("C")) / \
+            float(len(subseq) - subseq.count("N"))
+      except ZeroDivisionError:
+         GC = 'NA'
+      print seqname, s+1, s+5000, GC
+
+
+def read_genome_and_compute_GC(f):
    '''Read a fasta file and return a dictionary whose keys are the
    sequence names and values are the sequences in text format.
    Remove pT2 and weird chromosomes.'''
 
-   genome = dict()
    txt = f.read()
    segments = txt.split('>')
    for segment in segments:
@@ -20,29 +31,9 @@ def read_genome(f):
       name = re.sub(r'\s.*', '', header)
       # Remove "chrUn_GL456385' etc. and pT2
       if '_' in name or 'pT2' in name: continue
-      genome[name] = seq.replace('\n', '')
-   return genome
-
-
-def compute_GC(chrom, pos, genome):
-   seq = genome[chrom]
-   seq10kb = seq[(pos-5000):(pos+5000)].upper()
-   seq1Mb = seq[(pos-500000):(pos+500000)].upper()
-
-   GC10kb = (seq10kb.count("G") + seq10kb.count("C")) / \
-      float(len(seq10kb) - seq10kb.count("N"))
-   GC1Mb = (seq1Mb.count("G") + seq1Mb.count("C")) / \
-      float(len(seq1Mb) - seq1Mb.count("N"))
-
-   return (GC10kb,GC1Mb)
-
+      chromseq = seq.replace('\n', '')
+      compute_GC(name, chromseq)
 
 if __name__ == '__main__':
    with open(FASTASEQ) as f:
-      genome = read_genome(f)
-   for pos in range(0, 200000000, 1000000):
-      try:
-         (GC1,GC2) = compute_GC('chr1', pos, genome)
-      except ZeroDivisionError:
-         GC2 = 'NA'
-      print pos, GC2
+      read_genome_and_compute_GC(f)

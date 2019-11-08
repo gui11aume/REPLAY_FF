@@ -24,7 +24,10 @@ def remove_barcodes(f):
 
 
 def collect(f):
-   _ = next(f)
+   try:
+      _ = next(f)
+   except StopIteration:
+      return
    for line in f:
       bcd, ff, at, gc = line.split()
       if bcd in TOREMOVE: continue
@@ -47,13 +50,10 @@ if __name__ == '__main__':
       with gzopen(fname) as f:
          collect(f)
 
-   nsyn = 0
-   npairs = 0
+   tot = defaultdict(int)
    for bcd, reps in BRCD2REP.items():
       if len(reps) < 2: continue
+#      print '\t'.join([str(x) for x in reps])
       for a,b in combinations(reps, 2):
-         if a == 0 and b == 0: continue
-         if a == 1 and b == 1:
-            nsyn += 1
-         npairs += 1
-   print nsyn, npairs
+         tot[(a,b)] += 1
+   print tot[(0,0)], tot[(0,1)]+tot[(1,0)], tot[(1,1)]
