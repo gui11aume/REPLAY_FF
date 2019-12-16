@@ -152,7 +152,6 @@ r1r2_34997_TTAGGC.co.gz                                                    \
 24_35175_GTTCAC.co.gz                                                      \
 24_35175_TCTTAG.co.gz                                                      \
 24_35175_TGCAGT.co.gz                                                      \
-48_34999_TCTACA.co.gz                                                      \
 48_35176_ATGTCT.co.gz                                                      \
 48_35176_GCTGAA.co.gz                                                      \
 48_35176_TAGGAC.co.gz                                                      \
@@ -160,7 +159,11 @@ r1r2_34997_TTAGGC.co.gz                                                    \
 R1R2_35174_AGCTTG.co.gz                                                    \
 R1R2_35174_CGATGT.co.gz                                                    \
 R1R2_35174_CTGGAT.co.gz                                                    \
-R1R2_35174_TTAGGC.co.gz
+R1R2_35174_TTAGGC.co.gz                                                    \
+48PV_1_lib_00283AAA_TCTACA.co.gz                                           \
+48PV_2_lib_00284AAA_GCTGAA.co.gz                                           \
+48PV_3_lib_00285AAA_TAGGAC.co.gz                                           \
+48PV_lib_00282AAA_ATGTCT.co.gz
 
 # Manually flagged as bad profiles from clustering analyses.
 BAD=                                                                       \
@@ -236,8 +239,7 @@ r1r2_34997_TTAGGC                                                          \
 R1R2_35174_AGCTTG                                                          \
 R1R2_35174_CGATGT                                                          \
 R1R2_35174_CTGGAT                                                          \
-R1R2_35174_TTAGGC      
-
+R1R2_35174_TTAGGC                                                          
 
 all: $(TARGETS)
 

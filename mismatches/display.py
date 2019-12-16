@@ -92,7 +92,7 @@ def display(f):
       FF, AT, GC = float(ff), float(at), float(gc)
       if FF > 0 and FF > AT and FF > GC:
          FFtot += 1
-#         continue
+         continue
       if AT + GC < 2: continue
       if AT == 0. or GC == 0.:
          zo += 1
@@ -109,8 +109,8 @@ if __name__ == '__main__':
    for fname in sys.argv[2:]:
       with gzopen(fname) as f:
          remove_barcodes(f)
-   with open(sys.argv[1]) as f:
-      show_ratio(f)
+   with gzopen(sys.argv[1]) as f:
+#      show_ratio(f)
 #      just_show(f)
-#      sys.stdout.write('\t%.3f\t%.3f\t%.3f\t%d\t%d\n' % display(f))
+      sys.stdout.write('\t%.3f\t%.3f\t%.3f\t%d\t%d\n' % display(f))
 #      sys.stdout.write('\t%.3f\n' % count(f))

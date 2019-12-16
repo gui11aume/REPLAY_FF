@@ -27,12 +27,18 @@ all: $(TARGETS)
 
 # This creates all fasta files (see definition of 'FASTA').
 $(FASTA):
-	python makefasta_nextseq.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
-		/data/GF2-iPCR-pT2FF_R2.fastq.gz
-	python makefasta_hiseq.py /data/MM_M_14930_read1.fastq.gz \
-		/data/MM_M_14930_read2.fastq.gz CA_GT_GA
-	python makefasta_hiseq.py /data/lane6_lane6_read1.fastq.gz \
-		/data/lane6_lane6_read2.fastq.gz TC
+	python makefasta_nextseq.py /data/iPCR1_read1.fastq.gz \
+		/data/iPCR1_read2.fastq.gz
+	python makefasta_hiseq.py /data/iPCR2_read1.fastq.gz \
+		/data/iPCR2_read2.fastq.gz CA_GT_GA
+	python makefasta_hiseq.py /data/iPCR3_read1.fastq.gz \
+		/data/iPCR3_read2.fastq.gz TC
+#	python makefasta_nextseq.py /data/GF2-iPCR-pT2FF_R1.fastq.gz \
+#		/data/GF2-iPCR-pT2FF_R2.fastq.gz
+#	python makefasta_hiseq.py /data/MM_M_14930_read1.fastq.gz \
+#		/data/MM_M_14930_read2.fastq.gz CA_GT_GA
+#	python makefasta_hiseq.py /data/lane6_lane6_read1.fastq.gz \
+#		/data/lane6_lane6_read2.fastq.gz TC
 
 #%.map: %.fasta
 #	gem-mapper -I /data/mm10_pT2_unmasked.gem \
