@@ -22,7 +22,7 @@ SRR10564808_2.fastq.gz:
 #GSM4197262 	E14 cells, AC_6xPCR_no_ISceI_rep4   SAMN13430860 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/012/SRR10564812/SRR10564812_1.fastq.gz
 #GSM4197263 	E14 cells, AC_6xPCR_no_ISceI_rep5   SAMN13430847 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/013/SRR10564813/SRR10564813_1.fastq.gz
 #GSM4197264 	E14 cells, AC_6xPCR_no_ISceI_rep6   SAMN13430846 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/014/SRR10564814/SRR10564814_1.fastq.gz
-#GSM4197265 	E14 cells, AC_6xPCR_no_ISceI_rep7   SAMN13430845
+#GSM4197265 	E14 cells, AC_6xPCR_no_ISceI_rep7   SAMN13430845 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/015/SRR10564815/SRR10564815_1.fastq.gz
 #GSM4197266 	E14 cells, AC_6xPCR_no_ISceI_rep8   SAMN13430844 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/016/SRR10564816/SRR10564816_1.fastq.gz
 #GSM4197267 	E14 cells, AC_6xPCR_no_ISceI_rep9   SAMN13430843 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/017/SRR10564817/SRR10564817_1.fastq.gz
 #GSM4197268 	E14 cells, AC_LA_24h_rep1           SAMN13430842 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/018/SRR10564818/SRR10564818_1.fastq.gz
@@ -60,7 +60,7 @@ SRR10564808_2.fastq.gz:
 #GSM4197300 	E14 cells, AG_LA_48h_rep4           SAMN13430880 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/050/SRR10564850/SRR10564850_1.fastq.gz
 #GSM4197301 	E14 cells, AG_LA_no_ISceI_rep1      SAMN13430879 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/051/SRR10564851/SRR10564851_1.fastq.gz
 #GSM4197302 	E14 cells, AG_LA_no_ISceI_rep2      SAMN13430878 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/052/SRR10564852/SRR10564852_1.fastq.gz
-#GSM4197303 	E14 cells, AG_LA_no_ISceI_rep3      SAMN13430877 
+#GSM4197303 	E14 cells, AG_LA_no_ISceI_rep3      SAMN13430877 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/053/SRR10564853/SRR10564853_1.fastq.gz
 #GSM4197304 	E14 cells, AG_LA_no_ISceI_rep4      SAMN13430876 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/054/SRR10564854/SRR10564854_1.fastq.gz
 #GSM4197305 	E14 cells, AG_LA_no_ISceI_rep5      SAMN13430875 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/055/SRR10564855/SRR10564855_1.fastq.gz
 #GSM4197306 	E14 cells, AG_LA_no_ISceI_rep6      SAMN13430874 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/056/SRR10564856/SRR10564856_1.fastq.gz
@@ -73,7 +73,7 @@ SRR10564808_2.fastq.gz:
 #GSM4197313 	E14 cells, CA_6xPCR_48h_rep1        SAMN13430903 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/063/SRR10564863/SRR10564863_1.fastq.gz
 #GSM4197314 	E14 cells, CA_6xPCR_48h_rep2        SAMN13430902 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/052/SRR10564752/SRR10564752_1.fastq.gz
 #GSM4197315 	E14 cells, CA_6xPCR_48h_rep3        SAMN13430901 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/053/SRR10564753/SRR10564753_1.fastq.gz
-#GSM4197316 	E14 cells, CA_6xPCR_48h_rep4        SAMN13430900 
+#GSM4197316 	E14 cells, CA_6xPCR_48h_rep4        SAMN13430900 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/054/SRR10564754/SRR10564754_1.fastq.gz
 #GSM4197317 	E14 cells, CA_6xPCR_no_ISceI_rep1   SAMN13430899 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/055/SRR10564755/SRR10564755_1.fastq.gz
 #GSM4197318 	E14 cells, CA_6xPCR_no_ISceI_rep2   SAMN13430898 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/056/SRR10564756/SRR10564756_1.fastq.gz
 #GSM4197319 	E14 cells, CA_6xPCR_no_ISceI_rep3   SAMN13430897 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/057/SRR10564757/SRR10564757_1.fastq.gz
@@ -93,14 +93,14 @@ SRR10564808_2.fastq.gz:
 #GSM4197333 	E14 cells, TC_6xPCR_24h_rep1        SAMN13430925 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/071/SRR10564771/SRR10564771_1.fastq.gz
 #GSM4197334 	E14 cells, TC_6xPCR_24h_rep2        SAMN13430924 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/072/SRR10564772/SRR10564772_1.fastq.gz
 #GSM4197335 	E14 cells, TC_6xPCR_24h_rep3        SAMN13430923 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/073/SRR10564773/SRR10564773_1.fastq.gz
-#GSM4197336 	E14 cells, TC_6xPCR_24h_rep4        SAMN13430918
+#GSM4197336 	E14 cells, TC_6xPCR_24h_rep4        SAMN13430918 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/074/SRR10564774/SRR10564774_1.fastq.gz
 #GSM4197337 	E14 cells, TC_6xPCR_48h_rep1        SAMN13430917 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/075/SRR10564775/SRR10564775_1.fastq.gz
 #GSM4197338 	E14 cells, TC_6xPCR_48h_rep2        SAMN13430922 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/076/SRR10564776/SRR10564776_1.fastq.gz
 #GSM4197339 	E14 cells, TC_6xPCR_48h_rep3        SAMN13430921 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/077/SRR10564777/SRR10564777_1.fastq.gz
 #GSM4197340 	E14 cells, TC_6xPCR_48h_rep4        SAMN13430920 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/078/SRR10564778/SRR10564778_1.fastq.gz
-#GSM4197341 	E14 cells, TC_6xPCR_no_ISceI_rep1   SAMN13430919 
-#GSM4197342 	E14 cells, TC_6xPCR_no_ISceI_rep2   SAMN13430916
-#GSM4197343 	E14 cells, TC_6xPCR_no_ISceI_rep3   SAMN13430915
+#GSM4197341 	E14 cells, TC_6xPCR_no_ISceI_rep1   SAMN13430919 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/079/SRR10564779/SRR10564779_1.fastq.gz
+#GSM4197342 	E14 cells, TC_6xPCR_no_ISceI_rep2   SAMN13430916 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/080/SRR10564780/SRR10564780_1.fastq.gz
+#GSM4197343 	E14 cells, TC_6xPCR_no_ISceI_rep3   SAMN13430915 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/081/SRR10564781/SRR10564781_1.fastq.gz
 #GSM4197344 	E14 cells, TC_6xPCR_no_ISceI_rep4   SAMN13430914 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/082/SRR10564782/SRR10564782_1.fastq.gz
 #GSM4197345 	E14 cells, TC_6xPCR_no_ISceI_rep5   SAMN13430913 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/083/SRR10564783/SRR10564783_1.fastq.gz
 #GSM4197346 	E14 cells, TC_6xPCR_no_ISceI_rep6   SAMN13430912 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/084/SRR10564784/SRR10564784_1.fastq.gz
@@ -113,14 +113,14 @@ SRR10564808_2.fastq.gz:
 #GSM4197353 	E14 cells, TC_LA_48h_rep1           SAMN13430943 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/091/SRR10564791/SRR10564791_1.fastq.gz
 #GSM4197354 	E14 cells, TC_LA_48h_rep2           SAMN13430942 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/092/SRR10564792/SRR10564792_1.fastq.gz
 #GSM4197355 	E14 cells, TC_LA_48h_rep3           SAMN13430941 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/093/SRR10564793/SRR10564793_1.fastq.gz
-#GSM4197356 	E14 cells, TC_LA_48h_rep4           SAMN13430940 
+#GSM4197356 	E14 cells, TC_LA_48h_rep4           SAMN13430940 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/094/SRR10564794/SRR10564794_1.fastq.gz
 #GSM4197357 	E14 cells, TC_LA_no_ISceI_rep1      SAMN13430939 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/095/SRR10564795/SRR10564795_1.fastq.gz
 #GSM4197358 	E14 cells, TC_LA_no_ISceI_rep2      SAMN13430938 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/096/SRR10564796/SRR10564796_1.fastq.gz
 #GSM4197359 	E14 cells, TC_LA_no_ISceI_rep3      SAMN13430937 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/097/SRR10564797/SRR10564797_1.fastq.gz
 #GSM4197360 	E14 cells, TC_LA_no_ISceI_rep4      SAMN13430936 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/098/SRR10564798/SRR10564798_1.fastq.gz
 #GSM4197361 	E14 cells, TC_LA_no_ISceI_rep5      SAMN13430935 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/099/SRR10564799/SRR10564799_1.fastq.gz
 #GSM4197362 	E14 cells, TC_LA_no_ISceI_rep6      SAMN13430934 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/000/SRR10564800/SRR10564800_1.fastq.gz
-#GSM4197363 	E14 cells, TC_LA_no_ISceI_rep7      SAMN13430933
+#GSM4197363 	E14 cells, TC_LA_no_ISceI_rep7      SAMN13430933 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/001/SRR10564801/SRR10564801_1.fastq.gz
 #GSM4197364 	E14 cells, TC_LA_no_ISceI_rep8      SAMN13430932 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/002/SRR10564802/SRR10564802_1.fastq.gz
 #GSM4197365 	E14 cells, TG_6xPCR_24h_rep1        SAMN13430931 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/003/SRR10564803/SRR10564803_1.fastq.gz
 #GSM4197366 	E14 cells, TG_6xPCR_24h_rep2        SAMN13430964 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/004/SRR10564804/SRR10564804_1.fastq.gz
@@ -130,22 +130,22 @@ SRR10564808_2.fastq.gz:
 #GSM4197370 	E14 cells, TG_6xPCR_48h_rep2        SAMN13430966 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/030/SRR10564730/SRR10564730_1.fastq.gz
 #GSM4197371 	E14 cells, TG_6xPCR_48h_rep3        SAMN13430965 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/031/SRR10564731/SRR10564731_1.fastq.gz
 #GSM4197372 	E14 cells, TG_6xPCR_48h_rep4        SAMN13430962 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/032/SRR10564732/SRR10564732_1.fastq.gz
-#GSM4197373 	E14 cells, TG_6xPCR_no_ISceI_rep1   SAMN13430961
-#GSM4197374 	E14 cells, TG_6xPCR_no_ISceI_rep2   SAMN13430960
-#GSM4197375 	E14 cells, TG_6xPCR_no_ISceI_rep3   SAMN13430959
+#GSM4197373 	E14 cells, TG_6xPCR_no_ISceI_rep1   SAMN13430961 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/033/SRR10564733/SRR10564733_1.fastq.gz
+#GSM4197374 	E14 cells, TG_6xPCR_no_ISceI_rep2   SAMN13430960 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/034/SRR10564734/SRR10564734_1.fastq.gz
+#GSM4197375 	E14 cells, TG_6xPCR_no_ISceI_rep3   SAMN13430959 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/035/SRR10564735/SRR10564735_1.fastq.gz
 #GSM4197376 	E14 cells, TG_6xPCR_no_ISceI_rep4   SAMN13430958 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/036/SRR10564736/SRR10564736_1.fastq.gz
-#GSM4197377 	E14 cells, TG_LA_24h_rep1           SAMN13430957
+#GSM4197377 	E14 cells, TG_LA_24h_rep1           SAMN13430957 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/037/SRR10564737/SRR10564737_1.fastq.gz
 #GSM4197378 	E14 cells, TG_LA_24h_rep2           SAMN13430956 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/038/SRR10564738/SRR10564738_1.fastq.gz
 #GSM4197379 	E14 cells, TG_LA_24h_rep3           SAMN13430955 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/039/SRR10564739/SRR10564739_1.fastq.gz
 #GSM4197380 	E14 cells, TG_LA_24h_rep4           SAMN13430954 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/040/SRR10564740/SRR10564740_1.fastq.gz
-#GSM4197381 	E14 cells, TG_LA_48h_rep1           SAMN13430953 
+#GSM4197381 	E14 cells, TG_LA_48h_rep1           SAMN13430953 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/041/SRR10564741/SRR10564741_1.fastq.gz
 #GSM4197382 	E14 cells, TG_LA_48h_rep2           SAMN13430952 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/042/SRR10564742/SRR10564742_1.fastq.gz
 #GSM4197383 	E14 cells, TG_LA_48h_rep3           SAMN13430951 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/043/SRR10564743/SRR10564743_1.fastq.gz
 #GSM4197384 	E14 cells, TG_LA_48h_rep4           SAMN13430950 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/044/SRR10564744/SRR10564744_1.fastq.gz
 #GSM4197385 	E14 cells, TG_LA_no_ISceI_rep1      SAMN13430949 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/045/SRR10564745/SRR10564745_1.fastq.gz
 #GSM4197386 	E14 cells, TG_LA_no_ISceI_rep2      SAMN13430948 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/046/SRR10564746/SRR10564746_1.fastq.gz
-#GSM4197387 	E14 cells, TG_LA_no_ISceI_rep3      SAMN13430979
+#GSM4197387 	E14 cells, TG_LA_no_ISceI_rep3      SAMN13430979 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/047/SRR10564747/SRR10564747_1.fastq.gz
 #GSM4197388 	E14 cells, TG_LA_no_ISceI_rep4      SAMN13430969 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/048/SRR10564748/SRR10564748_1.fastq.gz
 #GSM4197389 	E14 cells, iPCR_1                   SAMN13430978 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/049/SRR10564749/SRR10564749_1.fastq.gz
-#GSM4197390 	E14 cells, iPCR_2                   SAMN13430977
-#GSM4197391 	E14 cells, iPCR_3                   SAMN13430976
+#GSM4197390 	E14 cells, iPCR_2                   SAMN13430977 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/050/SRR10564750/SRR10564750_1.fastq.gz
+#GSM4197391 	E14 cells, iPCR_3                   SAMN13430976 ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/051/SRR10564751/SRR10564751_1.fastq.gz
